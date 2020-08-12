@@ -1,0 +1,6 @@
+.build
+build
+.env
+node_modules
+scratch
+web_modules

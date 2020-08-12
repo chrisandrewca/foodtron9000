@@ -1,0 +1,19 @@
+{
+  "name": "chrisandrewca-site",
+  "version": "1.0.0",
+  "author": "Chris Campbell",
+  "license": "GPLv2",
+  "scripts": {
+    "build": "./pre.sh && snowpack build",
+    "dev": "./pre.sh && snowpack dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "lit-html": "^1.2.1"
+  },
+  "devDependencies": {
+    "@snowpack/plugin-dotenv": "^2.0.0",
+    "esm-hmr": "^0.1.0",
+    "snowpack": "^2.7.7"
+  }
+}
