@@ -35,6 +35,9 @@ h1 {
   color: green;
 }
 
+/*
+ * Landing page
+ */
 .landing {
   height: 100%;
   overflow: hidden;
@@ -42,9 +45,55 @@ h1 {
   width: 100%;
 }
 
-/* area of focus is 1400 px wide */
 .landing > picture > img {
-  object-position: -13rem;
   position: absolute; /* to place under content */
   z-index: -1;
+}
+
+@media (min-width: 0px) and (max-width: 280px) {
+  .landing > picture > img {
+    object-position: -11rem;
+  }
+}
+
+@media (min-width: 281px) and (max-width: 320px) {
+  .landing > picture > img {
+    object-position: -8.5rem;
+  }
+}
+
+@media (min-width: 321px) and (max-width: 360px) {
+  .landing > picture > img {
+    object-position: -8.5rem;
+  }
+}
+
+@media (min-width: 361px) and (max-width: 375px) {
+  .landing > picture > img {
+    object-position: -8rem;
+  }
+}
+
+@media (min-width: 376px) and (max-width: 412px) {
+  .landing > picture > img {
+    object-position: -7.5rem;
+  }
+}
+
+@media (min-width: 413px) and (max-width: 450px) {
+  .landing > picture > img {
+    object-position: -7.5rem;
+  }
+}
+
+@media (min-width: 451px) and (max-width: 768px) {
+  .landing > picture > img {
+    object-position: -7.5rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .landing > picture > img {
+    object-position: -7rem;
+  }
 }
