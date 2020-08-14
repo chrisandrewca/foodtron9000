@@ -1,5 +1,5 @@
-mkdir -p /var/www/media
+#mkdir -p /var/www/media
 
-rm /var/www/media/*
+#rm /var/www/media/*
 
-cp ./media/* /var/www/media
+#cp ./media/* /var/www/media
