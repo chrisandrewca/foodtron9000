@@ -151,7 +151,24 @@ const Home = () => html`
       <h1>Sell your food online - right now. Seriously.</h1>
       <h2>No experience required 	&#128076; No bullshit!</h2>
     </div>
-    ${Anchor({ content: 'Buy my T-Shirt', href: '/product' })}
+    <div class="start">
+      <form class="signup">
+          <label class="file">
+            <span>Lets get selling! Share a menu item.</span>
+              <a class="button" tabIndex="0">
+                Snap a photo
+              </a>
+            <span>
+              <input accept="image/*" type="file" tabIndex="-1" />
+            </span>
+          </label>
+        <input placeholder="Menu item" type="text" />
+        <input placeholder="Price" type="text" />
+        <input placeholder="@handle" type="text" />
+        <input placeholder="Email" type="text" />
+        <input class="button" type="submit" value="Start selling!" />
+      </form>
+    </div>
   </div>`;
 
 export default Home;

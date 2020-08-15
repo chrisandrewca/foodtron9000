@@ -1,4 +1,12 @@
-html, body {
+/*
+ * Resets and initial definitions
+ */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body, html {
   background: #fff;
   font-family: system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 1vw;
@@ -20,9 +28,23 @@ body {
   z-index: -36;
 }
 
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+input, label, textarea {
+  appearance: none;
+  font-family: system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 1vw;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
 }
 
 /* img {
@@ -31,10 +53,6 @@ body {
   max-width: 100%;
 } */
 
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  padding: 0;
-}
 
 /*
  * Landing page
@@ -71,6 +89,88 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /*
+ * Landing start + signup form
+ */
+.start {
+  background: white;
+  border-radius: 3px;
+  box-shadow: 0 2px 1px rgba(0,0,0,0.09), 
+              0 4px 2px rgba(0,0,0,0.09), 
+              0 8px 4px rgba(0,0,0,0.09), 
+              0 16px 8px rgba(0,0,0,0.09),
+              0 32px 16px rgba(0,0,0,0.09);
+  margin: 34vh 2vw 0 2vw;
+  padding: 1.4vh 3vw;
+}
+
+.signup > input, 
+.signup > label,
+.signup > textarea {
+  font-size: 18px;
+  width: 100%;
+}
+
+.signup > input {
+  border: 1px solid #dbdbdb;
+  border-radius: 3px;
+  margin: 0.4vh 0;
+  padding: 1vh 1vw;
+}
+
+.signup input[type="file"] {
+  margin: -100vh 0 0 0;
+  opacity: 0;
+  position: absolute;
+  padding: 0;
+  right: 0;
+  top: 0;
+  z-index: 0;
+}
+
+.file {
+  position: relative;
+}
+
+.file span {
+  display: block;
+  position: relative;
+  text-align: center;
+}
+
+.file a {
+  display: inline-block;
+  margin-top: 16px;
+  position: relative;
+  text-align: center;
+  width: 100%;
+  z-index: 2;
+}
+
+.file a:focus {
+  outline: none;
+}
+
+.file a img {
+  display: block;
+  margin: 0 auto;
+  max-height: 400px;
+  max-width: 100%;
+  padding-top: 0.7rem;
+}
+
+.signup .button {
+  background: #6772e5;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  color: #fff;
+  cursor: pointer;
+  letter-spacing: .025em;
+  text-transform: uppercase;
+  transition: all .15s ease;
+}
+
+/*
  * Landing page background image
  */
 .landing > picture > img {
@@ -104,13 +204,13 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (min-width: 361px) and (max-width: 375px) {
   .landing > picture > img {
-    object-position: -34vw;
+    object-position: -33vw;
   }
 }
 
 @media (min-width: 376px) and (max-width: 412px) {
   .landing > picture > img {
-    object-position: -7.5rem;
+    object-position: -28vw;
   }
 }
 
