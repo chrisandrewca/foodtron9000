@@ -154,19 +154,19 @@ const Home = () => html`
     <div class="start">
       <form class="signup">
           <label class="file">
-            <span>Lets get selling! Share a menu item.</span>
-              <a class="button" tabIndex="0">
+            <span class="file-label">Start selling! Share a menu item.</span>
+              <a class="signup-button snap-photo" tabIndex="0">
                 Snap a photo
               </a>
             <span>
-              <input accept="image/*" type="file" tabIndex="-1" />
+              <input class="file-input" accept="image/*" type="file" tabIndex="-1" />
             </span>
           </label>
         <input placeholder="Menu item" type="text" />
         <input placeholder="Price" type="text" />
         <input placeholder="@handle" type="text" />
         <input placeholder="Email" type="text" />
-        <input class="button" type="submit" value="Start selling!" />
+        <input class="signup-button start-button" type="submit" value="Start selling!" />
       </form>
     </div>
   </div>`;
