@@ -1,9 +1,41 @@
-import Anchor from './utils/anchor';
 import { html } from 'lit-html';
+import { setState } from './utils/state';
+import { update } from './utils/render';
+
+const uncapturedState = setState(() => ({
+  fields: {}
+}));
+
+const handlePhoto = (e) => {
+
+  if (e.target.files.length > 0) {
+
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const state = setState(state => ({
+        ...state,
+        fields: {
+          ...state.fields,
+          photo: {
+            name: file.name,
+            src: reader.result
+          }
+        }
+      }));
+      update(Home(state));
+    }
+
+    reader.readAsDataURL(file);
+  }
+};
 
 const dpr = window.devicePixelRatio;
 
-const Home = () => html`
+const Home = ({
+  fields: { photo }
+} = uncapturedState) => html`
 
   <div class="landing">
     <picture>
@@ -149,24 +181,38 @@ const Home = () => html`
 
     <div class="headers">
       <h1>Sell your food online - right now. Seriously.</h1>
-      <h2>No experience required 	&#128076; No bullshit!</h2>
+      <h2>No experience required &#128076; No bullshit!</h2>
     </div>
     <div class="start">
       <form class="signup">
           <label class="file">
             <span class="file-label">Start selling! Share a menu item.</span>
-              <a class="signup-button snap-photo" tabIndex="0">
+  ${!photo
+    ? html`
+              <a
+                class="signup-button snap-photo"
+                tabIndex="0"
+              >
                 Snap a photo
-              </a>
+              </a>`
+    : html`
+              <img .src=${photo.src} />
+    `}
             <span>
-              <input class="file-input" accept="image/*" type="file" tabIndex="-1" />
+              <input
+                accept="image/*"
+                @change=${handlePhoto}
+                class="file-input"
+                tabIndex="-1"
+                type="file"
+              />
             </span>
           </label>
-        <input placeholder="Menu item" type="text" />
-        <input placeholder="Price" type="text" />
-        <input placeholder="@handle" type="text" />
-        <input placeholder="Email" type="text" />
-        <input class="signup-button start-button" type="submit" value="Start selling!" />
+        <input class="signup-input" placeholder="Menu item" type="text" />
+        <input class="signup-input" placeholder="Price" type="text" />
+        <input class="signup-input" placeholder="@handle" type="text" />
+        <input class="signup-input" placeholder="Email" type="text" />
+        <input class="signup-button signup-input start-button" type="submit" value="Start selling!" />
       </form>
     </div>
   </div>`;

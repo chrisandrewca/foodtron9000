@@ -4,7 +4,7 @@ import Image from './elements/image';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
-const initialStateOnly = setState(() => ({
+const uncapturedState = setState(() => ({
   fields: {
     gender: {}
   },
@@ -58,7 +58,7 @@ const Product = ({
 
   fields: { gender },
   loading,
-  product: { colors, genders, photos, styles, title } } = initialStateOnly) => {
+  product: { colors, genders, photos, styles, title } } = uncapturedState) => {
 
   return loading ? nothing : html`
 

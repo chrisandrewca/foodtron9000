@@ -110,13 +110,17 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
-.signup > input {
+.signup-input {
   border: 1px solid #dbdbdb;
   border-radius: 3px;
   margin: 0.4vh 0;
   padding: 1vh 1vw;
 }
 
+/*
+  order matters for border: none;
+  define .signup-button after .signup-input
+*/
 .signup-button {
   background: #f5163b;
   border: none;
@@ -126,7 +130,30 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
   letter-spacing: .025em;
   text-transform: uppercase;
-  transition: all .15s ease;
+}
+
+/* TODO hover for desktop needs a different animation
+  one that pauses on the down portion
+*/
+.signup-button:hover {
+  animation: button-tap 0.2s ease-in-out;
+}
+
+/*
+  order matters for tap animation
+  define :active after :hover
+*/
+.signup-button:active {
+  animation: none;
+}
+
+@keyframes button-tap {
+  50% {
+    transform: translateY(1px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .file span {
