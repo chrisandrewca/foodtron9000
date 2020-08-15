@@ -1,7 +1,7 @@
 html, body {
   background: #fff;
   font-family: system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  font-size: 16px/1.65;
+  font-size: 1vw;
   font-weight: 400;
   height: 100%;
   margin: 0;
@@ -31,8 +31,9 @@ body {
   max-width: 100%;
 } */
 
-h1 {
-  color: green;
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
 }
 
 /*
@@ -45,6 +46,33 @@ h1 {
   width: 100%;
 }
 
+/*
+ * Landing page headers
+ */
+.headers {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+}
+
+.headers > h1,
+.headers > h2 {
+  background: black;
+  color: white;
+  display: inline-block;
+  font-size: 4.5vw;
+  margin-block-start: 0.7vh;
+  margin-block-end: 0.7vh;
+  padding: 1vw 2vw;
+}
+
+.headers > h2 {
+  font-size: 3.75vw;
+}
+
+/*
+ * Landing page background image
+ */
 .landing > picture > img {
   position: absolute; /* to place under content */
   z-index: -1;
@@ -76,7 +104,7 @@ h1 {
 
 @media (min-width: 361px) and (max-width: 375px) {
   .landing > picture > img {
-    object-position: -8rem;
+    object-position: -34vw;
   }
 }
 

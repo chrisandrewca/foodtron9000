@@ -147,7 +147,10 @@ const Home = () => html`
       />
     </picture>
 
-    <h1>hello</h1>
+    <div class="headers">
+      <h1>Sell your food online - right now. Seriously.</h1>
+      <h2>No experience required 	&#128076; No bullshit!</h2>
+    </div>
     ${Anchor({ content: 'Buy my T-Shirt', href: '/product' })}
   </div>`;
 
