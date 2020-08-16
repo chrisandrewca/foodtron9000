@@ -1,8 +1,10 @@
+import * as Api from './utils/api';
 import { html, nothing } from 'lit-html';
+import { setLocation } from './utils/location';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
-const fileLabel = (photo) =>
+const fileLabel = ({ photo }) =>
   !photo ? 'Snap a photo' : 'Got it!';
 
 const handlePhoto = (e) => {
@@ -18,6 +20,7 @@ const handlePhoto = (e) => {
         fields: {
           ...state.fields,
           photo: {
+            ...state.fields.photo,
             name: file.name,
             src: reader.result
           }
@@ -30,14 +33,29 @@ const handlePhoto = (e) => {
   }
 };
 
-const dpr = window.devicePixelRatio;
-const uncapturedState = setState(() => ({
-  fields: {}
-}));
+const handleSubmit = async (e, fields) => {
 
-const Home = ({
-  fields: { photo }
-} = uncapturedState) => html`
+  console.log({ e, fields });
+  e.preventDefault();
+  const start = await Api.start(fields);
+  console.log({ start });
+
+  const { errors } = start;
+  if (errors) {
+    const state = setState(state => ({
+      ...state,
+      errors
+    }));
+    update(Home(state));
+  } else {
+    setLocation('/profile');
+  }
+};
+
+const dpr = window.devicePixelRatio;
+const uncapturedState = setState(() => ({ fields: {} }));
+
+const Home = ({ fields } = uncapturedState) => html`
 
   <div class="landing">
     <picture>
@@ -193,10 +211,10 @@ const Home = ({
               class="signup-button snap-photo"
               tabIndex="0"
             >
-              &#128248; ${fileLabel(photo)}
+              &#128248; ${fileLabel(fields)}
             </a>
-            ${!!photo ? html`
-              <img class="menu-item-photo" .src=${photo.src} />` : nothing}
+            ${!!fields.photo ? html`
+              <img class="menu-item-photo" .src=${fields.photo.src} />` : nothing}
             <span>
               <input
                 accept="image/*"
@@ -211,7 +229,12 @@ const Home = ({
         <input class="signup-input" placeholder="&#128178; Price" type="text" />
         <input class="signup-input" placeholder="&#128038; @handle" type="text" />
         <input class="signup-input" placeholder="&#9993; Email" type="text" />
-        <input class="signup-button signup-input start-button" type="submit" value="&#129297; Start selling!" />
+        <input
+          class="signup-button signup-input start-button"
+          @click=${(e) => handleSubmit(e, fields)}
+          type="submit"
+          value="&#129297; Start selling!"
+        />
       </form>
     </div>
   </div>`;
