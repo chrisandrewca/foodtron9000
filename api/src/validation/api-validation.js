@@ -1,16 +1,26 @@
 const joi = require('joi');
 
-const start = async (req) => {
+const start = async ({ body, file }) => {
 
   const schema = joi.object({
     body: joi.object({
-      email: joi.string().required()
-        .messages({ 'string.base': 'Your email is required.' }),
+      email: joi.string().regex(/^.+[@].+\..+$/).required()
+        .label('email')
+        .messages({
+          'any.required': 'Your email is required.'
+        }),
       handle: joi.string().required()
-        .messages({ 'any.required': 'Your @handle is required.' }), // TODO @ + chars
+        .label('handle')
+        .messages({
+          'any.required': 'Your @handle is required.'
+        }), // TODO @ + chars
       menuItemName: joi.string().required()
-        .messages({ 'any.required': 'Your menu item is required.' }), // TODO chars
+        .label('menuItemName')
+        .messages({
+          'any.required': 'Your menu item is required.'
+        }), // TODO chars
       price: joi.number().precision(2).greater(0).required()
+        .label('price')
         .messages({
           'number.precision': 'Your price must be like "4.99".',
           'number.greater': 'Your price must be greater than 0.',
@@ -21,16 +31,19 @@ const start = async (req) => {
       originalname: joi.string().required(),
       path: joi.string().required()
     }).required()
-      .messages({ 'any.required': 'Your menu item photo is required.' })
+      .label('photo')
+      .messages({
+        'any.required': 'Your menu item photo is required.'
+      })
   });
 
   try {
-    await schema.validateAsync(req, { abortEarly: false, allowUnknown: true })
-  } catch (error) {
-    return { error };
+    await schema.validateAsync({ body, file }, { abortEarly: false, allowUnknown: true })
+  } catch (validationError) {
+    return { validationError };
   }
 
-  return { body: req.body, file: req.file };
+  return { body, file };
 };
 
 module.exports = {

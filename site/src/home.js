@@ -54,16 +54,28 @@ const handlePhoto = (e) => {
 
 const handleSubmit = async (e, fields) => {
 
-  console.log('SUBMIT');
   e.preventDefault();
   const start = await Api.start(fields);
 
-  const { errors } = start;
-  if (errors) {
-    const state = setState(state => ({
-      ...state,
-      errors
-    }));
+  const { error } = start;
+  if (error) {
+    const state = setState(state => {
+      state = {
+        ...state,
+        fields: {
+          ...state.fields
+        }
+      };
+
+      for (const key in error) {
+        state.fields[key] = {
+          ...state.fields[key],
+          error: error[key]
+        };
+      }
+
+      return state;
+    });
     update(Home(state));
   } else {
     setLocation('/profile');
