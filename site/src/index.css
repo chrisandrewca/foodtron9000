@@ -176,7 +176,25 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .snap-photo:focus {
-  outline: none;
+  outline: none; /* TODO needed? */
+}
+
+.menu-item-photo {
+  background: white;
+  border: 4px solid white;
+  border-radius: 8px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.08), 
+              0 2px 2px rgba(0,0,0,0.12), 
+              0 4px 4px rgba(0,0,0,0.16), 
+              0 8px 8px rgba(0,0,0,0.20);
+  left: 0;
+  margin: 0 auto;
+  max-height: 30vh;
+  object-fit: cover;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 12vh;
 }
 
 .file a img {

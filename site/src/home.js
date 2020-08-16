@@ -1,10 +1,9 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
-const uncapturedState = setState(() => ({
-  fields: {}
-}));
+const fileLabel = (photo) =>
+  !photo ? 'Snap a photo' : 'Got it!';
 
 const handlePhoto = (e) => {
 
@@ -32,6 +31,9 @@ const handlePhoto = (e) => {
 };
 
 const dpr = window.devicePixelRatio;
+const uncapturedState = setState(() => ({
+  fields: {}
+}));
 
 const Home = ({
   fields: { photo }
@@ -181,23 +183,20 @@ const Home = ({
 
     <div class="headers">
       <h1>Sell your food online - right now. Seriously.</h1>
-      <h2>No experience required &#128076; No bullshit!</h2>
+      <h2>No experience required &#9996; No bullshit!</h2>
     </div>
     <div class="start">
       <form class="signup">
           <label class="file">
             <span class="file-label">Start selling! Share a menu item.</span>
-  ${!photo
-    ? html`
-              <a
-                class="signup-button snap-photo"
-                tabIndex="0"
-              >
-                Snap a photo
-              </a>`
-    : html`
-              <img .src=${photo.src} />
-    `}
+            <a
+              class="signup-button snap-photo"
+              tabIndex="0"
+            >
+              &#128248; ${fileLabel(photo)}
+            </a>
+            ${!!photo ? html`
+              <img class="menu-item-photo" .src=${photo.src} />` : nothing}
             <span>
               <input
                 accept="image/*"
@@ -208,11 +207,11 @@ const Home = ({
               />
             </span>
           </label>
-        <input class="signup-input" placeholder="Menu item" type="text" />
-        <input class="signup-input" placeholder="Price" type="text" />
-        <input class="signup-input" placeholder="@handle" type="text" />
-        <input class="signup-input" placeholder="Email" type="text" />
-        <input class="signup-button signup-input start-button" type="submit" value="Start selling!" />
+        <input class="signup-input" placeholder="&#127829; Menu item" type="text" />
+        <input class="signup-input" placeholder="&#128178; Price" type="text" />
+        <input class="signup-input" placeholder="&#128038; @handle" type="text" />
+        <input class="signup-input" placeholder="&#9993; Email" type="text" />
+        <input class="signup-button signup-input start-button" type="submit" value="&#129297; Start selling!" />
       </form>
     </div>
   </div>`;
