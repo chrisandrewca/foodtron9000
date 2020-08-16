@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/:tag', async (req, res, next) => {
+router.get('/:tag', async (req, res) => {
 
   return res.json({
     product: {

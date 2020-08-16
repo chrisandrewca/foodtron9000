@@ -1,4 +1,4 @@
-import * as Api from './utils/api';
+import * as Api from './utils/api-client';
 import { html, nothing } from 'lit-html';
 import { setLocation } from './utils/location';
 import { setState } from './utils/state';
@@ -6,6 +6,24 @@ import { update } from './utils/render';
 
 const fileLabel = ({ photo }) =>
   !photo ? 'Snap a photo' : 'Got it!';
+
+const handleChange = (e) => {
+
+  const { name, value } = e.target;
+  console.log({ name, value });
+  const state = setState(state => ({
+    ...state,
+    fields: {
+      ...state.fields,
+      [name]: {
+        ...state.fields[name],
+        value
+      }
+    }
+  }));
+  console.log({ state });
+  update(Home(state));
+};
 
 const handlePhoto = (e) => {
 
@@ -22,7 +40,8 @@ const handlePhoto = (e) => {
           photo: {
             ...state.fields.photo,
             name: file.name,
-            src: reader.result
+            src: reader.result,
+            value: file
           }
         }
       }));
@@ -35,10 +54,9 @@ const handlePhoto = (e) => {
 
 const handleSubmit = async (e, fields) => {
 
-  console.log({ e, fields });
+  console.log('SUBMIT');
   e.preventDefault();
   const start = await Api.start(fields);
-  console.log({ start });
 
   const { errors } = start;
   if (errors) {
@@ -225,10 +243,34 @@ const Home = ({ fields } = uncapturedState) => html`
               />
             </span>
           </label>
-        <input class="signup-input" placeholder="&#127829; Menu item" type="text" />
-        <input class="signup-input" placeholder="&#128178; Price" type="text" />
-        <input class="signup-input" placeholder="&#128038; @handle" type="text" />
-        <input class="signup-input" placeholder="&#9993; Email" type="text" />
+        <input
+          class="signup-input"
+          @change=${handleChange}
+          name="menuItemName"
+          placeholder="&#127829; Menu item"
+          type="text"
+        />
+        <input
+          class="signup-input"
+          @change=${handleChange}
+          name="price"
+          placeholder="&#128178; Price"
+          type="text"
+        />
+        <input
+          class="signup-input"
+          @change=${handleChange}
+          name="handle"
+          placeholder="&#128038; @handle"
+          type="text"
+        />
+        <input
+          class="signup-input"
+          @change=${handleChange}
+          name="email"
+          placeholder="&#9993; Email"
+          type="text"
+        />
         <input
           class="signup-button signup-input start-button"
           @click=${(e) => handleSubmit(e, fields)}
