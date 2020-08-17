@@ -18,7 +18,6 @@ router.post('/', multer.single('photo'), async (req, res) => {
       await fileStore.delete(file.path);
     }
 
-    console.dir({ validationError }, { depth: null });
     const fields = {};
     for (const detail of validationError.details) {
       fields[detail.context.label] = detail.message;

@@ -249,7 +249,7 @@ const Home = ({ fields } = uncapturedState) => html`
             >
               &#128248; ${fileLabel(fields)}
             </a>
-            ${!!fields.photo ? html`
+            ${!!fields.photo && fields.photo.src ? html`
               <img class="menu-item-photo" .src=${fields.photo.src} />` : nothing}
             <span>
               <input
