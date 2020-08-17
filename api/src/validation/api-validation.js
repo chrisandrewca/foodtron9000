@@ -47,7 +47,7 @@ const start = async ({ body, file }) => {
   try {
     await schema.validateAsync({ body, file }, { abortEarly: false, allowUnknown: true })
   } catch (validationError) {
-    return { validationError };
+    return { body, file, validationError };
   }
 
   return { body, file };
