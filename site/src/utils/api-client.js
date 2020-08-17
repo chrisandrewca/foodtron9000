@@ -11,6 +11,9 @@ export const start = async (fields) => {
     method: 'POST'
   });
 
-  const { start } = await result.json();
+  const { start = {} } = result.ok
+    ? {}
+    : await result.json();
+
   return start;
 };

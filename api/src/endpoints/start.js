@@ -18,21 +18,20 @@ router.post('/', multer.single('photo'), async (req, res) => {
       await fileStore.delete(file.path);
     }
 
-    // TODO error func/template
-    const error = {
-      start: {
-        code: 'schema',
-        fields: {}
-      }
-    };
-
+    const fields = {};
     for (const detail of validationError.details) {
-      error.fields[detail.context.label] = detail.message;
+      fields[detail.context.label] = detail.message;
     }
 
+    // TODO error func/template
     return res
       .status(500)
-      .json({ start: { error } });
+      .json({
+        start: {
+          code: 'schema',
+          fields
+        }
+      });
   }
 
   const userExists = await mongoStore.userExists(body);
