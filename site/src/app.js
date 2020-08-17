@@ -5,7 +5,8 @@ const App = async () => {
 
   const pages = [
     { path: /^[/]$/, load: async () => (await import('./home')).default },
-    { path: /^[/]product$/, load: async () => (await import('./product')).default }
+    { path: /^[/]manage-product$/, load: async () => (await import('./manage-product')).default },
+    { path: /^[/]profile$/, load: async () => (await import('./profile')).default }
   ];
 
   const renderPage = async () => {
