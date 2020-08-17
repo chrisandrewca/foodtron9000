@@ -14,8 +14,8 @@ const start = async ({ body, file }) => {
         .messages({
           'any.required': 'Your @handle is required.'
         }), // TODO @ + chars
-      menuItemName: joi.string().required()
-        .label('menuItemName')
+      productName: joi.string().required()
+        .label('productName')
         .messages({
           'any.required': 'Your menu item is required.'
         }), // TODO chars
@@ -28,6 +28,7 @@ const start = async ({ body, file }) => {
         })
     }).required(),
     file: joi.object({
+      filename: joi.string().required(),
       originalname: joi.string().required(),
       path: joi.string().required()
     }).required()

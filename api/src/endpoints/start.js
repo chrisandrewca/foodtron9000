@@ -5,8 +5,8 @@ const mongoStore = require('../storage/mdb');
 const multer = require('multer')({
   dest: 'scratch'
 });
+const photoService = require('../media/photo');
 const router = require('express').Router();
-const sharp = require('sharp');
 
 router.post('/', multer.single('photo'), async (req, res) => {
 
@@ -14,66 +14,88 @@ router.post('/', multer.single('photo'), async (req, res) => {
 
   if (validationError) {
     if (file && file.path) {
-      await fileUtils.delete(file.path);
+      // TODO global error handler
+      await fileStore.delete(file.path);
     }
 
-    const error = { code: 'schema', fields: {} };
+    // TODO error func/template
+    const error = {
+      start: {
+        code: 'schema',
+        fields: {}
+      }
+    };
+
     for (const detail of validationError.details) {
       error.fields[detail.context.label] = detail.message;
     }
 
-    return res.json({ start: { error } });
+    return res
+      .status(500)
+      .json({ start: { error } });
   }
-
-  // TODO delete image on all errors
 
   const userExists = await mongoStore.userExists(body);
   if (userExists) {
+
+    await fileStore.delete(file.path);
+
     if (userExists.email === body.email) {
-      return res.json({
-        start: {
-          error: {
-            code: 'email',
-            fields: {
-              email: 'Welcome back! You\'re already signed up.'
+      return res
+        .status(500)
+        .json({
+          start: {
+            error: {
+              code: 'email',
+              fields: {
+                email: 'Welcome back! You\'re already signed up.'
+              }
             }
           }
-        }
-      });
+        });
     }
 
     if (userExists.handle === body.handle) {
-      return res.json({
-        start: {
-          error: {
-            code: 'handle',
-            fields: {
-              handle: 'Sorry that @handle is taken.'
+      return res
+        .status(500)
+        .json({
+          start: {
+            error: {
+              code: 'handle',
+              fields: {
+                handle: 'Sorry that @handle is taken.'
+              }
             }
           }
-        }
-      });
+        });
     }
   }
 
   try {
-    const { email, handle } = body;
+    await mongoStore.setUser(body, body);
+
+    const photos = await photoService.saveFromFiles({ files: [file] });
+    await mongoStore.setProduct(body, { ...body, photos });
+
     await emailService.sendStartEmail(body);
-    await mongoStore.setUser(body, { email, handle });
-    // const photo = await photos.savePhoto();
-    // await db.setMenuItem();
-    // await email.start();
 
     await fileStore.delete(file.path);
+
   } catch (startError) {
     console.log({ startError });
-    return res.json({
-      start: {
-        error: {
-          code: 'internal'
+
+    // TODO global error handler
+    await fileStore.delete(file.path);
+
+    return res
+      .status(500)
+      .json({
+        start: {
+          error: {
+            code: 'internal'
+          }
         }
-      }
-    });
+      });
   }
 
   return res.status(200).end();

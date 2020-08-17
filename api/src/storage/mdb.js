@@ -1,15 +1,25 @@
 const mongo = require('mongodb').MongoClient;
 
-const setUser = async ({ email, handle }, props) =>
-  await cmd(async db => await db.collection('user').updateOne(
-    { email, handle },
-    { $set: props },
-    { upsert: true }));
+const setProduct = async ({ handle }, { description, photos, price, productName }) =>
+  await cmd(async db =>
+    await db.collection('product').updateOne(
+      { handle },
+      { $set: { description, photos, price, productName } },
+      { upsert: true }));
+
+const setUser = async ({ email, handle }, { }) =>
+  await cmd(async db =>
+    await db.collection('user').updateOne(
+      { email, handle },
+      { $set: { email, handle } },
+      { upsert: true }));
 
 const userExists = async ({ email, handle }) =>
-  await cmd(async db => await db.collection('user').findOne({ $or: [{ email }, { handle }] }));
+  await cmd(async db =>
+    await db.collection('user').findOne({ $or: [{ email }, { handle }] }));
 
 module.exports = {
+  setProduct,
   setUser,
   userExists
 };

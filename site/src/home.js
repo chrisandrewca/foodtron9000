@@ -10,7 +10,6 @@ const fileLabel = ({ photo }) =>
 const handleChange = (e) => {
 
   const { name, value } = e.target;
-  console.log({ name, value });
   const state = setState(state => ({
     ...state,
     fields: {
@@ -21,7 +20,6 @@ const handleChange = (e) => {
       }
     }
   }));
-  console.log({ state });
   update(Home(state));
 };
 
@@ -258,7 +256,7 @@ const Home = ({ fields } = uncapturedState) => html`
         <input
           class="signup-input"
           @change=${handleChange}
-          name="menuItemName"
+          name="productName"
           placeholder="&#127829; Menu item"
           type="text"
         />
