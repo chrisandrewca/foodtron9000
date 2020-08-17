@@ -1,0 +1,22 @@
+folders required:
+/var/www/media
+/var/www/media/assets
+
+misc required:
+env files
+PGP keys for SSH
+swap files
+ufw allow only Nginx and OpenSSH
+
+tech required:
+lets encrypt
+node
+nginx
+mongodb
+pm2
+
+users and groups required:
+G: var-www-x
+U: app_user
+U: mongo user
+U: nginx user
