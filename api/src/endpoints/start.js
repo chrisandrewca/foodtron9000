@@ -18,6 +18,7 @@ router.post('/', multer.single('photo'), async (req, res) => {
       await fileStore.delete(file.path);
     }
 
+    console.dir({ validationError }, { depth: null });
     const fields = {};
     for (const detail of validationError.details) {
       fields[detail.context.label] = detail.message;
@@ -28,8 +29,10 @@ router.post('/', multer.single('photo'), async (req, res) => {
       .status(500)
       .json({
         start: {
-          code: 'schema',
-          fields
+          error: {
+            code: 'schema',
+            fields
+          }
         }
       });
   }

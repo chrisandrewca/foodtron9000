@@ -57,6 +57,7 @@ const handleSubmit = async (e, fields) => {
 
   const { error } = start;
   if (error) {
+
     const state = setState(state => {
       state = {
         ...state,
@@ -65,16 +66,23 @@ const handleSubmit = async (e, fields) => {
         }
       };
 
-      for (const key in error) {
+      let errorText = '';
+      for (const key in error.fields) {
         state.fields[key] = {
           ...state.fields[key],
-          error: error[key]
+          error: error.fields[key]
         };
+
+        errorText += error.fields[key] + '\n';
       }
 
+      state.errorText = errorText;
       return state;
     });
+
     update(Home(state));
+    setTimeout(() => alert(state.errorText), 1);
+
   } else {
     setLocation('/profile');
   }
@@ -264,6 +272,8 @@ const Home = ({ fields } = uncapturedState) => html`
           class="signup-input"
           @change=${handleChange}
           name="price"
+          inputmode='decimal'
+          pattern='\$?\d{1,6}.\d\d'
           placeholder="&#128178; Price"
           type="text"
         />

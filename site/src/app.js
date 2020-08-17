@@ -1,10 +1,6 @@
 import { matchLocation, onLocationChanged } from './utils/location';
 import { update } from './utils/render';
 
-// TODO move into location.js
-console.log('location', window.location);
-//
-
 const App = async () => {
 
   const pages = [
