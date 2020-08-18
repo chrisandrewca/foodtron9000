@@ -7,6 +7,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/product', require('./endpoints/product'));
+app.use('/api/profile', require('./endpoints/profile'));
 app.use('/api/start', require('./endpoints/start'));
 
 // catch 404 and forward to error handler

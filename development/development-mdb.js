@@ -1,11 +1,11 @@
 const mongo = require('mongodb').MongoClient;
 
-const clearAllUsers = async () =>
+const clearAllInCollection = async (collection) =>
     await cmd(async db =>
-      await db.collection('user').deleteMany({}));
+      await db.collection(collection).deleteMany({}));
 
 module.exports = {
-  clearAllUsers
+  clearAllInCollection
 };
 
 /*

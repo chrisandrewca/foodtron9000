@@ -1,5 +1,7 @@
 const joi = require('joi');
 
+// warning: this may expose errors for "internal" fields, leaking joi dependency
+// for example see schema.validateAsync without allowUnknown
 const fieldsFromValidationError = (validationError) => {
   const fields = {};
   for (const detail of validationError.details) {
@@ -29,6 +31,28 @@ const productPost = async ({ files }) => {
   }
 
   return { files };
+};
+
+const profileGet = async ({ params }) => {
+
+  const schema = joi.object({
+    params: joi.object({
+      handle: joi.string().required() // TODO handle syntax
+        .label('handle')
+        .messages({
+          'any.required': 'Your handle is required.',
+          'string.empty': 'Your handle is required.'
+        })
+    }).required()
+  });
+
+  try {
+    await schema.validateAsync({ params }, { abortEarly: false });
+  } catch (validationError) {
+    return { params, validationError };
+  }
+
+  return { params };
 };
 
 const startPost = async ({ body, file }) => {
@@ -87,5 +111,6 @@ const startPost = async ({ body, file }) => {
 module.exports = {
   fieldsFromValidationError,
   productPost,
+  profileGet,
   startPost
 };

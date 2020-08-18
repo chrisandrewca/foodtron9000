@@ -1,5 +1,6 @@
 const apiValidation = require('../validation/api-validation');
 const fileStore = require('../storage/file');
+const mongoStore = require('../storage/mdb');
 const multer = require('multer')({
   dest: 'scratch'
 }); // warning: nginx location 40mb
@@ -32,11 +33,13 @@ router.post('/', multer.array('photos', 8), async (req, res) => {
       });
   }
 
-  await photoService.saveFromFiles({ files });
+  const photos = await photoService.saveFromFiles({ files });
   for (const file of files) {
     await fileStore.delete(file.path);
   }
 
+  // TODO use proper handle, return something?
+  await mongoStore.setProduct({ handle: 'chris' }, { photos });
   return res.json({ product: {} });
 });
 
