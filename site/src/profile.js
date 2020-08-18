@@ -118,10 +118,35 @@ const Profile = ({ loading, profile } = uncapturedState) => html`
       margin-top: 1.1rem;
     }
 
+    .store-sign {
+      background: white;
+      border-radius: 3px;
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.05rem;
+      text-transform: uppercase;
+    }
+
+    .store-sign > p {
+      margin: 0;
+      padding: 0.6rem;
+    }
+
+    .sign-open {
+      border: 1px solid red;
+      color: red;
+    }
+
+    .sign-closed {
+      border: 1px solid black;
+      color: black;
+    }
+
     .profile-user-name {
-      display: inline-block;
       font-size: 3.2rem;
       font-weight: 300;
+      overflow-wrap: break-word;
+      text-align: center;
     }
 
     .profile-edit-btn {
@@ -247,7 +272,7 @@ const Profile = ({ loading, profile } = uncapturedState) => html`
       .profile {
         display: flex;
         flex-wrap: wrap;
-        padding: 4rem 0;
+        padding: 1rem 0 4rem 0;
       }
 
       .profile::after {
@@ -300,8 +325,48 @@ const Profile = ({ loading, profile } = uncapturedState) => html`
       }
 
       .profile-stats {
+        align-items:center;
+        display: flex;
+        justify-content: center;
         order: 1;
-        margin-top: 1.5rem;
+        text-align: center;
+      }
+
+      .item-count {
+        align-items: center;
+        display: inline-block;
+        border-bottom: 0.1rem solid #dbdbdb;
+        justify-content: center;
+        text-align: center;
+        width: auto;
+      }
+
+      .item-count > p {
+        font-size: 1.2rem;
+        font-weight: 400;
+        margin: 0;
+        padding: 0 1.2rem 0.6rem 1.2rem;
+        text-transform: uppercase;
+      }
+
+      .item-count > p > span {
+        display: block;
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 0 0 0.4rem 0;
+      }
+
+      .place-order {
+        border: 0.1rem solid #dbdbdb;
+        border-radius: 3px;
+        box-shadow: none;
+        background: white;
+        color: #262626;
+        font-size: 2rem;
+        font-weight: 400;
+        padding: 0.4rem 1.2rem;
+        margin: 0 0 0 2rem;
+        text-transform: none;
       }
 
       .profile-stats ul {
@@ -368,7 +433,7 @@ const Profile = ({ loading, profile } = uncapturedState) => html`
       @media (max-width: 40rem) {
         .profile {
           grid-template-columns: auto 1fr;
-          grid-row-gap: 1.5rem;
+          grid-row-gap: 0rem;
         }
 
         .profile-image {
@@ -399,25 +464,26 @@ const Profile = ({ loading, profile } = uncapturedState) => html`
   </style>
 
   <header>
+  <h1 class="profile-user-name">janedoe_dsaaaaaaaaaaaaaaaaaaaaaaaaasadasdasddasdasdadadsadasdadadadadasdsa</h1>
   <div class="container">
 
     <div class="profile">
+
       <div class="profile-image">
         <img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
       </div>
 
       <div class="profile-user-settings">
-        <h1 class="profile-user-name">janedoe_</h1>
-        <button class="btn profile-edit-btn">Edit Profile</button>
-        <button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>
+        <!-- <div class="store-sign sign-open">
+          <p>Open</p>
+        </div> -->
       </div>
 
       <div class="profile-stats">
-        <ul>
-          <li><span class="profile-stat-count">164</span> posts</li>
-          <li><span class="profile-stat-count">188</span> followers</li>
-          <li><span class="profile-stat-count">206</span> following</li>
-        </ul>
+        <div class="item-count">
+          <p><span>6</span>Items</p>
+        </div>
+        <input class="place-order signup-button" type="submit" value="Place Order" />
       </div>
 
       <div class="profile-bio">
