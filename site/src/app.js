@@ -12,7 +12,7 @@ const App = async () => {
   const renderPage = async () => {
     const location = matchLocation(pages);
     const content = await location.page.load();
-    update(content());
+    await update(content());
   };
 
   // TODO unsubscribe? check chrome event logger

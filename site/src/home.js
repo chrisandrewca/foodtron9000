@@ -7,7 +7,7 @@ import { update } from './utils/render';
 const fileLabel = ({ photo }) =>
   !photo ? 'Snap a photo' : 'Got it!';
 
-const handleChange = (e) => {
+const handleChange = async (e) => {
 
   const { name, value } = e.target;
   const state = setState(state => ({
@@ -20,17 +20,20 @@ const handleChange = (e) => {
       }
     }
   }));
-  update(Home(state));
+  await update(Home(state));
 };
 
-const handlePhoto = (e) => {
+const handlePhoto = async (e) => {
+
+  // TODO error handling when API results in 413 via nginx -- payload too large
+  // TODO error handling when reader fails
 
   if (e.target.files.length > 0) {
 
     const file = e.target.files[0];
     const reader = new FileReader();
 
-    reader.onloadend = () => {
+    reader.onloadend = async () => {
       const state = setState(state => ({
         ...state,
         fields: {
@@ -43,7 +46,7 @@ const handlePhoto = (e) => {
           }
         }
       }));
-      update(Home(state));
+      await update(Home(state));
     }
 
     reader.readAsDataURL(file);
@@ -80,7 +83,7 @@ const handleSubmit = async (e, fields) => {
       return state;
     });
 
-    update(Home(state));
+    await update(Home(state));
     setTimeout(() => alert(state.errorText), 1);
 
   } else {
@@ -249,7 +252,7 @@ const Home = ({ fields } = uncapturedState) => html`
             >
               &#128248; ${fileLabel(fields)}
             </a>
-            ${!!fields.photo && fields.photo.src ? html`
+            ${fields.photo && fields.photo.src ? html`
               <img class="menu-item-photo" .src=${fields.photo.src} />` : nothing}
             <span>
               <input

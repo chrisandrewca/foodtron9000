@@ -1,6 +1,37 @@
 const joi = require('joi');
 
-const start = async ({ body, file }) => {
+const fieldsFromValidationError = (validationError) => {
+  const fields = {};
+  for (const detail of validationError.details) {
+    fields[detail.context.label] = detail.message;
+  }
+  return fields;
+}
+
+const productPost = async ({ files }) => {
+
+  const schema = joi.object({
+    files: joi.array().items(joi.object({
+      filename: joi.string().required(),
+      originalname: joi.string().required(),
+      path: joi.string().required()
+    })).required()
+      .label('photos')
+      .messages({
+        'any.required': 'Your menu item photos are required.'
+      })
+  });
+
+  try {
+    await schema.validateAsync({ files }, { abortEarly: false, allowUnknown: true });
+  } catch (validationError) {
+    return { files, validationError };
+  }
+
+  return { files };
+};
+
+const startPost = async ({ body, file }) => {
 
   // TODO message override for all cases when validation represents a value that must exist?
   const schema = joi.object({
@@ -54,5 +85,7 @@ const start = async ({ body, file }) => {
 };
 
 module.exports = {
-  start
+  fieldsFromValidationError,
+  productPost,
+  startPost
 };

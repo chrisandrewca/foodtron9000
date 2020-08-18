@@ -13,12 +13,10 @@ export const matchLocation = (pages) => {
 export const onLocationChanged = (handler) => {
 
   window.addEventListener('setLocation', async (e) => {
-    console.log('setLocation');
     await handler(e);
   });
 
   window.onpopstate = (e) => {
-    console.log('onpopstate', e);
     dispatchSetLocation({
       state: e.state,
       title: 'TODO TITLE',
@@ -33,7 +31,6 @@ export const replaceLocation = (path) => {
   // TODO not needed? ignored less safari? what does that look like?
   const title = 'TODO TITLE';
   window.history.replaceState(state, title, path);
-  console.log('replace location');
   dispatchSetLocation({ state, title, path });
 };
 
@@ -43,7 +40,6 @@ export const setLocation = (path) => {
   // TODO not needed? ignored less safari? what does that look like?
   const title = 'TODO TITLE';
   window.history.pushState(state, title, path);
-  console.log('pushState');
   dispatchSetLocation({ state, title, path });
 };
 

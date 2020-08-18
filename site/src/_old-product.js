@@ -20,7 +20,6 @@ const uncapturedState = setState(() => ({
   });
 
   const { product } = await result.json();
-  console.log({ product });
   const state = setState(state => ({
     ...state,
     fields: {
@@ -34,10 +33,10 @@ const uncapturedState = setState(() => ({
     product
   }));
 
-  update(Product(state));
+  await update(Product(state));
 })();
 
-const onGenderChanged = (e) => {
+const onGenderChanged = async (e) => {
 
   const state = setState(state => ({
     ...state,
@@ -50,7 +49,7 @@ const onGenderChanged = (e) => {
     }
   }));
 
-  update(Product(state));
+  await update(Product(state));
 };
 
 // TODO address defaults

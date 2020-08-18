@@ -4,24 +4,22 @@ const fileStore = require('../storage/file');
 const mongoStore = require('../storage/mdb');
 const multer = require('multer')({
   dest: 'scratch'
-});
+}); // warning: nginx location 40mb
 const photoService = require('../media/photo');
 const router = require('express').Router();
 
 router.post('/', multer.single('photo'), async (req, res) => {
 
-  const { body, file, validationError } = await apiValidation.start(req);
+  const { body, file, validationError } = await apiValidation.startPost(req);
 
   if (validationError) {
+
     if (file && file.path) {
       // TODO global error handler
       await fileStore.delete(file.path);
     }
 
-    const fields = {};
-    for (const detail of validationError.details) {
-      fields[detail.context.label] = detail.message;
-    }
+    const fields = apiValidation.fieldsFromValidationError(validationError);
 
     // TODO error func/template
     return res

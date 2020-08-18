@@ -1,24 +1,43 @@
-const express = require('express');
-const router = express.Router();
+const apiValidation = require('../validation/api-validation');
+const fileStore = require('../storage/file');
+const multer = require('multer')({
+  dest: 'scratch'
+}); // warning: nginx location 40mb
+const photoService = require('../media/photo');
+const router = require('express').Router();
 
-router.get('/:tag', async (req, res) => {
+router.post('/', multer.array('photos', 8), async (req, res) => {
 
-  return res.json({
-    product: {
-      title: 'You are good Tee',
-      photos: ['chrisandrewca'],
-      genders: ['Womens', 'Mens'],
-      styles: {
-        'Womens': ['Beefy', 'Sporty'],
-        'Mens': ['Beefy', 'Sporty']
-      },
-      colors: {
-        'Womens': ['Red', 'Blue', 'Yellow'],
-        'Mens': ['Red', 'Blue', 'Yellow']
+  const { files, validationError } = await apiValidation.productPost(req);
+
+  if (validationError) {
+
+    if (files && files.length) {
+      for (const file of files) {
+        await fileStore.delete(file.path);
       }
-    },
-    cc: body // TODO use fetch?
-  });
+    }
+
+    const fields = apiValidation.fieldsFromValidationError(validationError);
+
+    return res
+      .status(500)
+      .json({
+        product: {
+          error: {
+            code: 'schema',
+            fields
+          }
+        }
+      });
+  }
+
+  await photoService.saveFromFiles({ files });
+  for (const file of files) {
+    await fileStore.delete(file.path);
+  }
+
+  return res.json({ product: {} });
 });
 
 module.exports = router;

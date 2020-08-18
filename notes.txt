@@ -10,9 +10,9 @@ ufw allow only Nginx and OpenSSH
 
 tech required:
 lets encrypt
+mongodb
 node
 nginx
-mongodb
 pm2
 
 users and groups required:
