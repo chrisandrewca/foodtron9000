@@ -504,7 +504,27 @@ const Profile = ({ loading, profile } = uncapturedState) => html`
       ${profile && profile.products.map(({ photos: [photo] }) => html`
         <div class="gallery-item" tabindex="0">
           <!-- TODO various media photos size, webp, jpeg -->
-          <img .src=${`/media/1080/${photo.filename}.jpeg`} class="gallery-image" alt="">
+          <picture>
+            <source
+              media="(min-width: 0px)"
+              sizes="100%"
+              .srcset=${`/media/1080/${photo.filename}.webp`}
+              type="image/webp" />
+
+            <source
+              media="(min-width: 0px)"
+              sizes="100%"
+              .srcset=${`/media/1080/${photo.filename}.jpeg`}
+              type="image/jpeg" />
+
+            <!-- product name in alt text -->
+            <img
+              alt=""
+              class="gallery-image"'
+              sizes="100%"
+              .srcset=${`/media/1080/${photo.filename}.jpeg`}
+            />
+          </picture>
         </div>`)}
     </div>
 
