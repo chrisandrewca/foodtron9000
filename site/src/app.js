@@ -6,7 +6,9 @@ const App = async () => {
   const pages = [
     { path: /^[/]$/, load: async () => (await import('./home')).default },
     { path: /^[/]manage-product$/, load: async () => (await import('./manage-product')).default },
-    { path: /^[/]profile$/, load: async () => (await import('./profile')).default }
+    { path: /^[/]profile$/, load: async () => (await import('./profile')).default },
+    { path: /^[/]profile-product$/, load: async () => (await import('./profile-product')).default }
+    // TODO /chris - requires safe names
   ];
 
   const renderPage = async () => {

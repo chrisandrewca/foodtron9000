@@ -1,15 +1,13 @@
+import Anchor from './elements/anchor';
+import { getProfile } from './utils/api-client';
 import { html } from 'lit-html';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
 (async () => {
 
-  const result = await fetch('/api/profile/chris', {
-    method: 'GET',
-    headers: { accept: 'application/json' }
-  });
+  const profile = await getProfile();
 
-  const { profile } = await result.json();
   const state = setState(state => ({
     ...state,
     loading: false,
@@ -501,30 +499,34 @@ const Profile = ({ loading, profile } = uncapturedState) => html`
     ${loading ? html`<div class="loader"></div>` : html`
 
     <div class="gallery">
-      ${profile && profile.products.map(({ photos: [photo] }) => html`
+      ${profile && profile.products.map(({ id, photos: [photo] }) => html`
         <div class="gallery-item" tabindex="0">
-          <!-- TODO various media photos size, webp, jpeg -->
-          <picture>
-            <source
-              media="(min-width: 0px)"
-              sizes="100%"
-              .srcset=${`/media/1080/${photo.filename}.webp`}
-              type="image/webp" />
+          ${Anchor(
+  {
+    content: html`
+            <!-- TODO various media photos size, webp, jpeg -->
+            <picture>
+              <source
+                media="(min-width: 0px)"
+                sizes="100%"
+                .srcset=${`/media/1080/${photo.filename}.webp`}
+                type="image/webp" />
 
-            <source
-              media="(min-width: 0px)"
-              sizes="100%"
-              .srcset=${`/media/1080/${photo.filename}.jpeg`}
-              type="image/jpeg" />
+              <source
+                media="(min-width: 0px)"
+                sizes="100%"
+                .srcset=${`/media/1080/${photo.filename}.jpeg`}
+                type="image/jpeg" />
 
-            <!-- product name in alt text -->
-            <img
-              alt=""
-              class="gallery-image"'
-              sizes="100%"
-              .srcset=${`/media/1080/${photo.filename}.jpeg`}
-            />
-          </picture>
+              <!-- product name in alt text -->
+              <img
+                alt=""
+                class="gallery-image"'
+                sizes="100%"
+                .srcset=${`/media/1080/${photo.filename}.jpeg`}
+              />
+            </picture>`, href: `/profile-product?id=${id}`
+  })}
         </div>`)}
     </div>
 

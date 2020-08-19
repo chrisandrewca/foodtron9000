@@ -1,3 +1,7 @@
+export const getSearchParams = () => {
+  return new URLSearchParams(window.location.search);
+};
+
 export const matchLocation = (pages) => {
 
   const { hash, pathname } = window.location;

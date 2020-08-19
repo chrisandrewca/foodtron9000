@@ -25,7 +25,7 @@ body, html {
 body {
   /* Sets overflowing background color when scrolled past the page in
 	  MacOS or in iOS. */
-  background: red;
+  background: #fafafa;
   position: relative;
   z-index: -36;
 }

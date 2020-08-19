@@ -1,3 +1,22 @@
+export const getProductById = async (id) => {
+
+  const result = await fetch(`/api/product/${id}`);
+
+  const { product } = await result.json();
+  return product;
+}
+
+export const getProfile = async (handle) => {
+
+  const result = await fetch('/api/profile/chris', {
+    method: 'GET',
+    headers: { accept: 'application/json' }
+  });
+
+  const { profile } = await result.json();
+  return profile;
+};
+
 export const setProduct = async (fields) => {
 
   const result = await fetch('/api/product', {

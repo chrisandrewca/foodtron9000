@@ -7,6 +7,30 @@ const multer = require('multer')({
 const photoService = require('../media/photo');
 const router = require('express').Router();
 
+router.get('/:id', async (req, res) => {
+
+  const { params, validationError } = await apiValidation.productGetById(req);
+
+  if (validationError) {
+
+    const params = apiValidation.fieldsFromValidationError(validationError);
+
+    return res
+      .status(500)
+      .json({
+        product: {
+          error: {
+            code: 'schema',
+            params
+          }
+        }
+      });
+  }
+
+  const product = await mongoStore.getProductById(params);
+  return res.json({ product });
+});
+
 router.post('/', multer.array('photos', 8), async (req, res) => {
 
   const { files, validationError } = await apiValidation.productPost(req);

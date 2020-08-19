@@ -52,7 +52,7 @@ const handlePhotos = async (e) => {
   await update(ManageProduct(state));
 };
 
-const handleSubmit = async (e, fields) => {
+const handleSubmit = async ({ e, fields }) => {
 
   e.preventDefault();
   await Api.setProduct(fields);
@@ -71,7 +71,7 @@ const ManageProduct = ({ fields } = uncapturedState) => html`
       type="file"
     />
     <input
-      @click=${(e) => handleSubmit(e, fields)}
+      @click=${(e) => handleSubmit({ e, fields })}
       type="submit"
       value="Save"
     />

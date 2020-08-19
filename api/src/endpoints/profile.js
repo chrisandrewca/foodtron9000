@@ -22,7 +22,7 @@ router.get('/:handle', async (req, res) => {
       });
   }
 
-  const products = await mongoStore.listProductsByHandle(params);
+  const products = await mongoStore.getProductsByHandle(params);
   return res.json({ profile: { products } });
 });
 

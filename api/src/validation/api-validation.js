@@ -10,6 +10,29 @@ const fieldsFromValidationError = (validationError) => {
   return fields;
 }
 
+const productGetById = async ({ params }) => {
+
+  const schema = joi.object({
+    params: joi.object({
+      id: joi.string().uuid({ version: "uuidv4" })
+        .required()
+        .label('id')
+        .messages({
+          'any.required': 'Your product ID is required.',
+          'string.empty': 'Your product ID is required.'
+        })
+    }).required()
+  });
+
+  try {
+    await schema.validateAsync({ params }, { abortEarly: false });
+  } catch (validationError) {
+    return { params, validationError };
+  }
+
+  return { params };
+};
+
 const productPost = async ({ files }) => {
 
   const schema = joi.object({
@@ -110,6 +133,7 @@ const startPost = async ({ body, file }) => {
 
 module.exports = {
   fieldsFromValidationError,
+  productGetById,
   productPost,
   profileGet,
   startPost

@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { setLocation } from './location';
+import { setLocation } from '../utils/location';
 
 const Anchor = ({ content, href }) => {
 
@@ -7,10 +7,6 @@ const Anchor = ({ content, href }) => {
     e.preventDefault();
     setLocation(href);
   };
-
-  if (typeof 'function' === content) {
-    content = content();
-  }
 
   return html`<a @click=${onClick} .href=${href}>${content}</a>`;
 };

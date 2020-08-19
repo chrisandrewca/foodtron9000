@@ -53,7 +53,7 @@ const handlePhoto = async (e) => {
   }
 };
 
-const handleSubmit = async (e, fields) => {
+const handleSubmit = async ({ e, fields }) => {
 
   e.preventDefault();
   const start = await Api.start(fields);
@@ -296,7 +296,7 @@ const Home = ({ fields } = uncapturedState) => html`
         />
         <input
           class="signup-button signup-input start-button"
-          @click=${(e) => handleSubmit(e, fields)}
+          @click=${(e) => handleSubmit({ e, fields })}
           type="submit"
           value="&#129297; Start selling!"
         />

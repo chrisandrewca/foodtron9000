@@ -1,8 +1,12 @@
 const mongo = require('mongodb').MongoClient;
 const uuid = require('uuid').v4;
 
+const getProductById = async ({ id }) =>
+  await cmd(async db =>
+    await db.collection('product').findOne({ id }));
+
 // TODO paginate and reduce memory usage from toArray()
-const listProductsByHandle = async ({ handle }) =>
+const getProductsByHandle = async ({ handle }) =>
   await cmd(async db =>
     await db.collection('product').find({ handle }).toArray());
 
@@ -25,7 +29,8 @@ const userExists = async ({ email, handle }) =>
     await db.collection('user').findOne({ $or: [{ email }, { handle }] }));
 
 module.exports = {
-  listProductsByHandle,
+  getProductById,
+  getProductsByHandle,
   setProduct,
   setUser,
   userExists
