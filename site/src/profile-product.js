@@ -16,10 +16,10 @@ import { update } from './utils/render';
     product
   }));
 
-  update(ProfileProduct(state));
+  await update(ProfileProduct(state));
 })();
 
-const handleChange = (e) => {
+const handleChange = async (e) => {
 
   const { name, value } = e.target;
 
@@ -34,7 +34,7 @@ const handleChange = (e) => {
     }
   }));
 
-  update(ProfileProduct(state));
+  await update(ProfileProduct(state));
 };
 
 const handleSubmit = ({ e, fields, product }) => {
@@ -53,6 +53,11 @@ const ProfileProduct = ({ fields, loading, product } = uncapturedState) =>
   <h1>${product.name}</h1>
   <p>${product.description}</p>
   <p>${product.price}</p>
+  <input
+    @change=${handleChange}
+    name="quantity"
+    type="text"
+  />
   <textarea
     @change=${handleChange}
     class=""

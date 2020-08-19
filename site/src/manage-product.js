@@ -3,6 +3,24 @@ import { html } from 'lit-html';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
+const handleChange = async (e) => {
+
+  const { name, value } = e.target;
+
+  const state = setState(state => ({
+    ...state,
+    fields: {
+      ...state.fields,
+      [name]: {
+        ...state.fields[name],
+        value
+      }
+    }
+  }));
+
+  await update(ManageProduct(state));
+};
+
 const handlePhotos = async (e) => {
 
   // TODO error handling when API results in 413 via nginx -- payload too large
@@ -70,6 +88,30 @@ const ManageProduct = ({ fields } = uncapturedState) => html`
       name="photos",
       type="file"
     />
+    <label>
+      Name
+      <input
+        @change=${handleChange}
+        name="name"
+        type="text"
+      />
+    </label>
+    <label>
+      Price
+      <input
+        @change=${handleChange}
+        name="price"
+        type="text"
+      />
+    </label>
+    <label>
+      Description
+      <textarea
+        @change=${handleChange}
+        class=""
+        name="description">
+      </textarea>
+    </label>
     <input
       @click=${(e) => handleSubmit({ e, fields })}
       type="submit"

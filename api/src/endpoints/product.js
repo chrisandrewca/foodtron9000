@@ -33,7 +33,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', multer.array('photos', 8), async (req, res) => {
 
-  const { files, validationError } = await apiValidation.productPost(req);
+  const { body, files, validationError } = await apiValidation.productPost(req);
 
   if (validationError) {
 
@@ -63,7 +63,7 @@ router.post('/', multer.array('photos', 8), async (req, res) => {
   }
 
   // TODO use proper handle, return something?
-  await mongoStore.setProduct({ handle: 'chris' }, { photos });
+  await mongoStore.setProduct({ handle: 'chris' }, { ...body, photos });
   return res.json({ product: {} });
 });
 

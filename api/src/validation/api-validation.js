@@ -33,9 +33,31 @@ const productGetById = async ({ params }) => {
   return { params };
 };
 
-const productPost = async ({ files }) => {
+const productPost = async ({ body, files }) => {
 
   const schema = joi.object({
+    body: joi.object({
+      description: joi.string().required()
+        .label('description')
+        .messages({
+          'any.required': 'Your description is required.',
+          'string.empty': 'Your description is required.',
+        }),
+      name: joi.string().required()
+        .label('name')
+        .messages({
+          'any.required': 'Your name is required.',
+          'string.empty': 'Your name is required.',
+        }),
+      price: joi.number().precision(2).greater(0).required()
+        .label('price')
+        .messages({
+          'number.precision': 'Your price must be like "4.99".',
+          'number.greater': 'Your price must be greater than 0.',
+          'any.required': 'Your price must be like "4.99".',
+          'number.base': 'Your price must be like "4.99".'
+        })
+    }).required(),
     files: joi.array().items(joi.object({
       filename: joi.string().required(),
       originalname: joi.string().required(),
@@ -48,12 +70,12 @@ const productPost = async ({ files }) => {
   });
 
   try {
-    await schema.validateAsync({ files }, { abortEarly: false, allowUnknown: true });
+    await schema.validateAsync({ body, files }, { abortEarly: false, allowUnknown: true });
   } catch (validationError) {
-    return { files, validationError };
+    return { body, files, validationError };
   }
 
-  return { files };
+  return { body, files };
 };
 
 const profileGet = async ({ params }) => {
@@ -63,8 +85,8 @@ const profileGet = async ({ params }) => {
       handle: joi.string().required() // TODO handle syntax
         .label('handle')
         .messages({
-          'any.required': 'Your handle is required.',
-          'string.empty': 'Your handle is required.'
+          'any.required': 'Your @handle is required.',
+          'string.empty': 'Your @handle is required.'
         })
     }).required()
   });
@@ -93,13 +115,13 @@ const startPost = async ({ body, file }) => {
       handle: joi.string().required()
         .label('handle')
         .messages({
-          'any.required': 'Your email is required.',
+          'any.required': 'Your @handle is required.',
           'string.empty': 'Your @handle is required.'
         }), // TODO @ + chars
-      productName: joi.string().required()
-        .label('productName')
+      name: joi.string().required()
+        .label('name')
         .messages({
-          'any.required': 'Your email is required.',
+          'any.required': 'Your menu item is required.',
           'string.empty': 'Your menu item is required.'
         }), // TODO chars
       price: joi.number().precision(2).greater(0).required()

@@ -10,11 +10,11 @@ const getProductsByHandle = async ({ handle }) =>
   await cmd(async db =>
     await db.collection('product').find({ handle }).toArray());
 
-const setProduct = async ({ handle, id = uuid() }, { description, photos, price, productName }) =>
+const setProduct = async ({ handle, id = uuid() }, { description, name, photos, price }) =>
   await cmd(async db =>
     await db.collection('product').updateOne(
       { handle, id },
-      { $set: { description, id, photos, price, productName } },
+      { $set: { description, id, name, photos, price } },
       { upsert: true }));
 
 const setUser = async ({ email, handle }, { }) =>

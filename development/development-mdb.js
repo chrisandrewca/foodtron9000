@@ -4,8 +4,13 @@ const clearAllInCollection = async (collection) =>
     await cmd(async db =>
       await db.collection(collection).deleteMany({}));
 
+const findAllInCollection = async (collection) =>
+    await cmd(async db =>
+      await db.collection(collection).find({}).toArray());
+
 module.exports = {
-  clearAllInCollection
+  clearAllInCollection,
+  findAllInCollection
 };
 
 /*

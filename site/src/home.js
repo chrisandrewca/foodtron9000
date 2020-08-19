@@ -267,7 +267,7 @@ const Home = ({ fields } = uncapturedState) => html`
         <input
           class="signup-input"
           @change=${handleChange}
-          name="productName"
+          name="name"
           placeholder="&#127829; Menu item"
           type="text"
         />
