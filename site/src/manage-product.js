@@ -109,8 +109,8 @@ const ManageProduct = ({ fields } = uncapturedState) => html`
       <textarea
         @change=${handleChange}
         class=""
-        name="description">
-      </textarea>
+        name="description"
+      ></textarea>
     </label>
     <input
       @click=${(e) => handleSubmit({ e, fields })}

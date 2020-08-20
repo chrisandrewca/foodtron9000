@@ -1,6 +1,19 @@
 const mongo = require('mongodb').MongoClient;
 const uuid = require('uuid').v4;
 
+const getOrderSession = async ({ id }) =>
+  await cmd(async db =>
+    await db.collection('orderSession').findOne({ id }));
+
+// TODO is it worth it to imply that the key id is required? is it implied?
+    // possibly just accept a single destructure
+const setOrderSession = async ({ id }, { products }) =>
+  await cmd(async db =>
+    await db.collection('orderSession').updateOne(
+      { id },
+      { $set: { id, products } },
+      { upsert: true }));
+
 const getProductById = async ({ id }) =>
   await cmd(async db =>
     await db.collection('product').findOne({ id }));
@@ -24,16 +37,18 @@ const setUser = async ({ email, handle }, { }) =>
       { $set: { email, handle } },
       { upsert: true }));
 
-const userExists = async ({ email, handle }) =>
+const getUserExists = async ({ email, handle }) =>
   await cmd(async db =>
     await db.collection('user').findOne({ $or: [{ email }, { handle }] }));
 
 module.exports = {
+  getOrderSession,
+  setOrderSession,
   getProductById,
   getProductsByHandle,
   setProduct,
   setUser,
-  userExists
+  getUserExists
 };
 
 /*

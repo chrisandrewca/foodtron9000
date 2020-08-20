@@ -10,12 +10,96 @@ const fieldsFromValidationError = (validationError) => {
   return fields;
 }
 
+const orderPost = async ({ body }) => {
+
+  const schema = joi.object({
+    body: joi.object({ // TODO duplicate between orderPost/orderSession
+      id: joi.string().uuid({ version: "uuidv4" }).required()
+        .label('id')
+        .messages({
+          'any.required': 'Your product ID is required.',
+          'string.empty': 'Your product ID is required.'
+        }),
+      note: joi.string().required()
+        .label('note')
+        .messages({
+          'any.required': 'Your note is required.',
+          'string.empty': 'Your note is required.',
+        }),
+      quantity: joi.number().precision(0).greater(0).required()
+        .label('quantity')
+        .messages({
+          'number.precision': 'Your quantity must be like "3".',
+          'number.greater': 'Your quantity must be greater than 0.',
+          'any.required': 'Your quantity must be like "3".',
+          'number.base': 'Your quantity must be like "3".'
+        })
+    }).required()
+  });
+
+  try {
+    await schema.validateAsync({ body }, { abortEarly: false });
+  } catch (validationError) {
+    return { body, validationError };
+  }
+
+  return { body };
+};
+
+const orderSession = async ({ orderSession }) => {
+
+  const schema = joi.object({
+    orderSession: joi.object({
+      id: joi.string().uuid({ version: "uuidv4" }).required()
+        .label('id')
+        .messages({
+          'any.required': 'Your product ID is required.',
+          'string.empty': 'Your product ID is required.'
+        }),
+      // TODO duplicate between orderPost/orderSession
+      products: joi.array().items(joi.object({
+        id: joi.string().uuid({ version: "uuidv4" }).required()
+          .label('id')
+          .messages({
+            'any.required': 'Your product ID is required.',
+            'string.empty': 'Your product ID is required.'
+          }),
+        note: joi.string().required()
+          .label('note')
+          .messages({
+            'any.required': 'Your note is required.',
+            'string.empty': 'Your note is required.',
+          }),
+        quantity: joi.number().precision(0).greater(0).required()
+          .label('quantity')
+          .messages({
+            'number.precision': 'Your quantity must be like "3".',
+            'number.greater': 'Your quantity must be greater than 0.',
+            'any.required': 'Your quantity must be like "3".',
+            'number.base': 'Your quantity must be like "3".'
+          })
+      })).required()
+        .label('products')
+        .messages({
+          'any.required': 'Your menu item photos are required.'
+        })
+    })
+  });
+
+  try {
+    await schema.validateAsync({ orderSession }, { abortEarly: false })
+  } catch (validationError) {
+    return { orderSession, validationError };
+  }
+
+  return { orderSession };
+};
+
 const productGetById = async ({ params }) => {
 
   const schema = joi.object({
     params: joi.object({
-      id: joi.string().uuid({ version: "uuidv4" })
-        .required()
+      id: joi.string().uuid({ version: "uuidv4" }).required()
         .label('id')
         .messages({
           'any.required': 'Your product ID is required.',
@@ -155,6 +239,8 @@ const startPost = async ({ body, file }) => {
 
 module.exports = {
   fieldsFromValidationError,
+  orderPost,
+  orderSession,
   productGetById,
   productPost,
   profileGet,

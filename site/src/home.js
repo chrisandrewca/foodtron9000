@@ -56,31 +56,21 @@ const handlePhoto = async (e) => {
 const handleSubmit = async ({ e, fields }) => {
 
   e.preventDefault();
-  const start = await Api.start(fields);
 
+  const start = await Api.start(fields);
   const { error } = start;
+
   if (error) {
 
     const state = setState(state => {
-      state = {
+
+      const { errorText, fields } = Api.getFieldsFromError({ error, fields: state.fields });
+
+      return {
         ...state,
-        fields: {
-          ...state.fields
-        }
+        errorText,
+        fields
       };
-
-      let errorText = '';
-      for (const key in error.fields) {
-        state.fields[key] = {
-          ...state.fields[key],
-          error: error.fields[key]
-        };
-
-        errorText += error.fields[key] + '\n';
-      }
-
-      state.errorText = errorText;
-      return state;
     });
 
     await update(Home(state));

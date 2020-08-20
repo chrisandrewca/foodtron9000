@@ -1,16 +1,19 @@
+import * as Api from './utils/api-client';
 import Anchor from './elements/anchor';
-import { getProfile } from './utils/api-client';
 import { html } from 'lit-html';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
 (async () => {
 
-  const profile = await getProfile();
+  // TODO error handling
+  const order = await Api.getOrder();
+  const profile = await Api.getProfile();
 
   const state = setState(state => ({
     ...state,
     loading: false,
+    order,
     profile
   }));
 
@@ -18,19 +21,12 @@ import { update } from './utils/render';
 })();
 
 const uncapturedState = setState(() => ({
-  loading: true
+  loading: true,
+  order: { products: [] } // warning: so we can load as much as the page as we can for a snappy response
 }));
 
-const Profile = ({ loading, profile } = uncapturedState) => html`
+const Profile = ({ loading, order, profile } = uncapturedState) => html`
   <style type="text/css">
-    /*
-      Source: https://codepen.io/GeorgePark/pen/VXrwOP
-      All grid code is placed in a 'supports' rule (feature query) at the bottom of the CSS (Line 310).
-      The 'supports' rule will only run if your browser supports CSS grid.
-      Flexbox and floats are used as a fallback so that browsers which don't support grid will still recieve a similar layout.
-    */
-
-    /* Base Styles */
     :root {
       font-size: 10px;
     }
@@ -479,7 +475,7 @@ const Profile = ({ loading, profile } = uncapturedState) => html`
 
       <div class="profile-stats">
         <div class="item-count">
-          <p><span>6</span>Items</p>
+          <p><span>${order.products.length}</span>Items</p>
         </div>
         <input class="place-order signup-button" type="submit" value="Place Order" />
       </div>

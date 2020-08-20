@@ -1,6 +1,7 @@
+import * as Api from './utils/api-client';
 import { html, nothing } from 'lit-html';
 import { getProductById } from './utils/api-client';
-import { getSearchParams } from './utils/location';
+import { getSearchParams, setLocation } from './utils/location';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
@@ -8,7 +9,6 @@ import { update } from './utils/render';
 
   const params = getSearchParams();
   const product = await getProductById(params.get('id'));
-  console.log({ product });
 
   const state = setState(state => ({
     ...state,
@@ -37,9 +37,30 @@ const handleChange = async (e) => {
   await update(ProfileProduct(state));
 };
 
-const handleSubmit = ({ e, fields, product }) => {
+const handleSubmit = async ({ e, fields, product }) => {
 
   e.preventDefault();
+
+  const { error } = await Api.addProductToOrder({ fields, product });
+
+  if (error) {
+
+    const state = setState(state => {
+
+      const { errorText, fields } = Api.getFieldsFromError({ error, fields: state.fields });
+
+      return {
+        ...state,
+        errorText,
+        fields
+      };
+    });
+
+    await update(ProfileProduct(state));
+  } else {
+
+    setLocation('/profile');
+  }
 };
 
 
@@ -56,15 +77,17 @@ const ProfileProduct = ({ fields, loading, product } = uncapturedState) =>
   <input
     @change=${handleChange}
     name="quantity"
+    inputmode='numeric'
+    pattern='\d'
     type="text"
   />
   <textarea
     @change=${handleChange}
     class=""
-    name="notes"
+    name="note"
   ></textarea>
   <input
-    @change=${(e) => handleSubmit({ e, fields, product })}
+    @click=${(e) => handleSubmit({ e, fields, product })}
     class="signup-button"
     type="submit"
     value="Add to order"

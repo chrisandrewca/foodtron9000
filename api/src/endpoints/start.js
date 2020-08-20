@@ -34,7 +34,7 @@ router.post('/', multer.single('photo'), async (req, res) => {
       });
   }
 
-  const userExists = await mongoStore.userExists(body);
+  const userExists = await mongoStore.getUserExists(body);
   if (userExists) {
 
     await fileStore.delete(file.path);
