@@ -5,7 +5,14 @@ const logger = require('morgan');
 const app = express();
 app.use(logger('dev')); // TODO process.env
 app.use(helmet());
-app.use(express.json());
+
+app.use(express.json({ verify: (req, res, buf, enc) => {
+  // TODO could optimize this - and avoid 2x the work (rawBody + json parse)
+  if (req.originalUrl.endsWith('stripe/hook')) {
+    req.rawBody = buf.toString();
+  }
+}}));
+
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
@@ -15,10 +22,12 @@ app.use((req, res, next) => {
 
 app.use(require('./session/order-session'));
 
+app.use('/api/buy', require('./endpoints/buy'));
 app.use('/api/order', require('./endpoints/order'));
 app.use('/api/product', require('./endpoints/product'));
 app.use('/api/profile', require('./endpoints/profile'));
 app.use('/api/start', require('./endpoints/start'));
+app.use('/api/stripe', require('./endpoints/stripe'));
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

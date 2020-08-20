@@ -20,6 +20,40 @@ import { update } from './utils/render';
   await update(Profile(state));
 })();
 
+const handleBuy = async (e) => {
+
+  e.preventDefault();
+
+  const buy = await Api.buy();
+
+  if (buy.error) {
+    console.log('buy error', { error: buy.error });
+  }
+
+  // TODO dynamic import for stripe
+  // const { loadStripe } = (await import('@stripe/stripe-js')).default;
+
+  const script = document.createElement('script');
+
+  script.onload = async () => {
+    // const stripe = await loadStripe(
+    //   import.meta.env.SNOWPACK_PUBLIC_STRIPE_PUBLIC,
+    //   { stripeAccount: stripe.account });
+
+    const stripe = Stripe("", {
+      stripeAccount: buy.stripe.stripeAccount
+    });
+    const stripeResult = await stripe.redirectToCheckout({
+      sessionId: buy.stripe.sessionId
+    });
+
+    console.log('stripe error', { stripeResult });
+  };
+
+  script.src = 'https://js.stripe.com/v3/';
+  document.head.appendChild(script);
+};
+
 const uncapturedState = setState(() => ({
   loading: true,
   order: { products: [] } // warning: so we can load as much as the page as we can for a snappy response
@@ -477,7 +511,14 @@ const Profile = ({ loading, order, profile } = uncapturedState) => html`
         <div class="item-count">
           <p><span>${order.products.length}</span>Items</p>
         </div>
-        <input class="place-order signup-button" type="submit" value="Place Order" />
+        <form>
+          <input
+            class="place-order signup-button"
+            @click=${handleBuy}
+            type="submit"
+            value="Place Order"
+          />
+        </form>
       </div>
 
       <div class="profile-bio">

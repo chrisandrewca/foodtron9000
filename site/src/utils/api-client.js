@@ -41,6 +41,19 @@ export const addProductToOrder = async ({ fields, product }) => {
   return order;
 };
 
+export const buy = async () => {
+
+  const result = await fetch('/api/buy', {
+    headers: {
+      accept: 'application/json'
+    },
+    method: 'POST'
+  });
+
+  const { buy } = await result.json();
+  return buy;
+};
+
 export const getOrder = async () => {
 
   const result = await fetch('/api/order', {

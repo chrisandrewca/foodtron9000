@@ -6,12 +6,16 @@
   "scripts": {
     "build": "snowpack build",
     "dev": "snowpack dev",
+    "install": "snowpack install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "lit-html": "^1.2.1"
+    "@stripe/stripe-js": "^1.9.0",
+    "lit-html": "^1.3.0"
   },
   "devDependencies": {
+    "@snowpack/plugin-dotenv": "^2.0.0",
+    "dotenv": "^8.2.0",
     "esm-hmr": "^0.1.0",
     "snowpack": "^2.8.0"
   }

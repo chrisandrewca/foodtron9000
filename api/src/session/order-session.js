@@ -30,6 +30,7 @@ const orderSession = async (req, res, next) => {
   } else {
 
     orderSession = await mongoStore.getOrderSession({ id: cookies.order });
+    // TODO consider validating / SRE notice
   }
 
   req.scoped.orderSession = orderSession;
