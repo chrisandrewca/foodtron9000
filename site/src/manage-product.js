@@ -3,6 +3,15 @@ import { html } from 'lit-html';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
+export const loadState = async () => {
+
+  const state = setState(() => ({ fields: {} }));
+
+  update(ManageProduct(state));
+};
+
+export const loadEffect = async () => { };
+
 const handleChange = async (e) => {
 
   const { name, value } = e.target;
@@ -76,9 +85,7 @@ const handleSubmit = async ({ e, fields }) => {
   await Api.setProduct(fields);
 };
 
-const uncapturedState = setState(() => ({ fields: {} }));
-
-const ManageProduct = ({ fields } = uncapturedState) => html`
+const ManageProduct = ({ fields }) => html`
 
   <h1>Manage product</h1>
   <form>

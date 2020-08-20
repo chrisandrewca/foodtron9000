@@ -4,17 +4,18 @@ import { update } from './utils/render';
 const App = async () => {
 
   const pages = [
-    { path: /^[/]$/, load: async () => (await import('./home')).default },
-    { path: /^[/]manage-product$/, load: async () => (await import('./manage-product')).default },
-    { path: /^[/]profile$/, load: async () => (await import('./profile')).default },
-    { path: /^[/]profile-product$/, load: async () => (await import('./profile-product')).default }
+    { path: /^[/]$/, load: async () => (await import('./home')) },
+    { path: /^[/]manage-product$/, load: async () => (await import('./manage-product')) },
+    { path: /^[/]profile$/, load: async () => (await import('./profile')) },
+    { path: /^[/]profile-product$/, load: async () => (await import('./profile-product')) }
     // TODO /chris - requires safe names
   ];
 
   const renderPage = async () => {
     const location = matchLocation(pages);
-    const content = await location.page.load();
-    await update(content());
+    const component = await location.page.load();
+    await component.loadState();
+    await component.loadEffect();
   };
 
   // TODO unsubscribe? check chrome event logger

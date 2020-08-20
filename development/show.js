@@ -2,6 +2,9 @@ require('dotenv').config();
 const fs = require('fs/promises');
 const mongoStore = require('./development-mdb');
 
+const showOrderSessions = async () =>
+  console.dir(await mongoStore.findAllInCollection('orderSession'), { depth: null });
+
 const showProducts = async () =>
   console.dir(await mongoStore.findAllInCollection('product'), { depth: null });
 
@@ -21,6 +24,7 @@ const showWwwMedia = async () => {
 
 const args = process.argv.slice(2);
 const funcs = {
+  orderSession: showOrderSessions,
   product: showProducts,
   user: showUsers,
   wwwmedia: showWwwMedia,

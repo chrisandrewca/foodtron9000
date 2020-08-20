@@ -4,7 +4,17 @@ import { html } from 'lit-html';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
-(async () => {
+export const loadState = async () => {
+
+  const state = setState(() => ({
+    loading: true,
+    order: { products: [] } // warning: so we can load as much as the page as we can for a snappy response
+  }));
+
+  update(Profile(state));
+};
+
+export const loadEffect = async () => {
 
   // TODO error handling
   const order = await Api.getOrder();
@@ -17,8 +27,8 @@ import { update } from './utils/render';
     profile
   }));
 
-  await update(Profile(state));
-})();
+  update(Profile(state));
+};
 
 const handleBuy = async (e) => {
 
@@ -26,40 +36,24 @@ const handleBuy = async (e) => {
 
   const buy = await Api.buy();
 
-  if (buy.error) {
-    console.log('buy error', { error: buy.error });
-  }
-
-  // TODO dynamic import for stripe
-  // const { loadStripe } = (await import('@stripe/stripe-js')).default;
-
   const script = document.createElement('script');
-
   script.onload = async () => {
-    // const stripe = await loadStripe(
-    //   import.meta.env.SNOWPACK_PUBLIC_STRIPE_PUBLIC,
-    //   { stripeAccount: stripe.account });
 
-    const stripe = Stripe("", {
+    const stripe = Stripe(import.meta.env.SNOWPACK_PUBLIC_STRIPE_PUBLIC, {
       stripeAccount: buy.stripe.stripeAccount
     });
-    const stripeResult = await stripe.redirectToCheckout({
+
+    // TODO error handling with result
+    await stripe.redirectToCheckout({
       sessionId: buy.stripe.sessionId
     });
-
-    console.log('stripe error', { stripeResult });
   };
 
-  script.src = 'https://js.stripe.com/v3/';
+  script.src = import.meta.env.SNOWPACK_PUBLIC_STRIPE_API;
   document.head.appendChild(script);
 };
 
-const uncapturedState = setState(() => ({
-  loading: true,
-  order: { products: [] } // warning: so we can load as much as the page as we can for a snappy response
-}));
-
-const Profile = ({ loading, order, profile } = uncapturedState) => html`
+const Profile = ({ loading, order, profile }) => html`
   <style type="text/css">
     :root {
       font-size: 10px;
@@ -571,4 +565,4 @@ const Profile = ({ loading, order, profile } = uncapturedState) => html`
   </div>
   </main>`;
 
-export default Profile;
+// export default Profile;

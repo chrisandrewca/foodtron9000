@@ -1,8 +1,6 @@
 module.exports = {
-  install: [
-    '@stripe/stripe-js'
-  ],
   mount: {
     src: "/"
-  }
+  },
+  plugins: ["@snowpack/plugin-dotenv"]
 };

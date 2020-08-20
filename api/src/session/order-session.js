@@ -18,6 +18,7 @@ const orderSession = async (req, res, next) => {
       domain: process.env.RUNTIME_DOMAIN,
       httpOnly: true,
       maxAge: 60 * 60 * 24,
+      path: '/',
       sameSite: 'strict',
       secure: true
     }));
@@ -33,6 +34,7 @@ const orderSession = async (req, res, next) => {
     // TODO consider validating / SRE notice
   }
 
+  console.log('orderSession', { orderSession });
   req.scoped.orderSession = orderSession;
 
   next();

@@ -5,7 +5,17 @@ import { getSearchParams, setLocation } from './utils/location';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
-(async () => {
+export const loadState = async () => {
+
+  const state = setState(() => ({
+    fields: {},
+    loading: true
+  }));
+
+  update(ProfileProduct(state));
+};
+
+export const loadEffect = async () => {
 
   const params = getSearchParams();
   const product = await getProductById(params.get('id'));
@@ -17,7 +27,7 @@ import { update } from './utils/render';
   }));
 
   await update(ProfileProduct(state));
-})();
+};
 
 const handleChange = async (e) => {
 
@@ -63,13 +73,7 @@ const handleSubmit = async ({ e, fields, product }) => {
   }
 };
 
-
-const uncapturedState = setState(() => ({
-  fields: {},
-  loading: true
-}));
-
-const ProfileProduct = ({ fields, loading, product } = uncapturedState) =>
+const ProfileProduct = ({ fields, loading, product }) =>
   loading ? nothing : html`
   <h1>${product.name}</h1>
   <p>${product.description}</p>

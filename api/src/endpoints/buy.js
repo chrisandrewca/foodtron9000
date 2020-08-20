@@ -6,6 +6,7 @@ const stripe = require('stripe')(process.env.STRIPE_PRIVATE);
 router.post('/', async (req, res) => {
 
   const { orderSession } = req.scoped;
+  console.dir({ orderSession }, { depth: null });
 
   const handle = 'chris'; // TODO
   const stripeAccount = { // TODO from DB else FT9 account for test checkout
@@ -14,7 +15,7 @@ router.post('/', async (req, res) => {
 
   // TODO if not users stripe account
   // TODO user
-  await emailService.sendCheckoutWithoutStripeAccountEmail({ user: { email: '' } });
+  // await emailService.sendCheckoutWithoutStripeAccountEmail({ user: { email: '' } });
 
   // TODO from mongo
   // TODO billing/business model

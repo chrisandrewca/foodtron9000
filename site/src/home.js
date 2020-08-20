@@ -4,6 +4,16 @@ import { setLocation } from './utils/location';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
+export const loadState = async () => {
+
+  const dpr = window.devicePixelRatio;
+  const state = setState(() => ({ dpr, fields: {} }));
+
+  update(Home(state));
+};
+
+export const loadEffect = async () => { };
+
 const fileLabel = ({ photo }) =>
   !photo ? 'Snap a photo' : 'Got it!';
 
@@ -81,10 +91,7 @@ const handleSubmit = async ({ e, fields }) => {
   }
 };
 
-const dpr = window.devicePixelRatio;
-const uncapturedState = setState(() => ({ fields: {} }));
-
-const Home = ({ fields } = uncapturedState) => html`
+const Home = ({ dpr, fields }) => html`
 
   <div class="landing">
     <picture>
