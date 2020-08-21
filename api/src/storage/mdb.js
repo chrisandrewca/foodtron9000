@@ -1,9 +1,35 @@
 const mongo = require('mongodb').MongoClient;
 const uuid = require('uuid').v4;
 
-const getOrderSession = async ({ id }) =>
+const getAuthSession = async ({ sessionId }) =>
   await cmd(async db =>
-    await db.collection('orderSession').findOne({ id }));
+    await db.collection('authSession').findOne({ sessionId }));
+
+const setAuthSession = async ({ created, handle, sessionId }) =>
+  await cmd(async db =>
+    await db.collection('authSession').updateOne(
+      { handle },
+      { $set: { created, handle, sessionId } },
+      { upsert: true }));
+
+const deleteAuthSessions = async ({ handle }) =>
+  await cmd(async db =>
+    await db.collection('authSession').deleteMany({ handle }));
+
+const getLoginLink = async ({ key }) =>
+  await cmd(async db =>
+    await db.collection('loginLink').findOne({ key }));
+
+const setLoginLink = async ({ expiry, handle, key }) =>
+  await cmd(async db =>
+    await db.collection('loginLink').updateOne(
+      { handle },
+      { $set: { expiry, handle, key } },
+      { upsert: true }));
+
+const deleteLoginLinks = async ({ handle }) =>
+  await cmd(async db =>
+    await db.collection('loginLink').deleteMany({ handle }));
 
 const setOrder = async ({
   customer,
@@ -18,6 +44,10 @@ const setOrder = async ({
       { $set: { customer, handle, id, products, stripe } },
       { upsert: true }));
 
+const getOrderSession = async ({ id }) =>
+  await cmd(async db =>
+    await db.collection('orderSession').findOne({ id }));
+
 // TODO is it worth it to imply that the key id is required? is it implied?
 // possibly just accept a single destructure
 const setOrderSession = async ({ id }, { products }) =>
@@ -25,6 +55,13 @@ const setOrderSession = async ({ id }, { products }) =>
     await db.collection('orderSession').updateOne(
       { id },
       { $set: { id, products } },
+      { upsert: true }));
+
+const setProduct = async ({ handle, id = uuid() }, { description, name, photos, price }) =>
+  await cmd(async db =>
+    await db.collection('product').updateOne(
+      { handle, id },
+      { $set: { description, id, name, photos, price } },
       { upsert: true }));
 
 const getProductById = async ({ id }) =>
@@ -35,13 +72,6 @@ const getProductById = async ({ id }) =>
 const getProductsByHandle = async ({ handle }) =>
   await cmd(async db =>
     await db.collection('product').find({ handle }).toArray());
-
-const setProduct = async ({ handle, id = uuid() }, { description, name, photos, price }) =>
-  await cmd(async db =>
-    await db.collection('product').updateOne(
-      { handle, id },
-      { $set: { description, id, name, photos, price } },
-      { upsert: true }));
 
 const getStripeAccount = async ({ handle }) =>
   await cmd(async db =>
@@ -54,19 +84,30 @@ const setUser = async ({ email, handle }, { }) =>
       { $set: { email, handle } },
       { upsert: true }));
 
+const getUserByHandle = async ({ handle }) =>
+  await cmd(async db =>
+    await db.collection('user').findOne({ handle }));
+
 const getUserExists = async ({ email, handle }) =>
   await cmd(async db =>
     await db.collection('user').findOne({ $or: [{ email }, { handle }] }));
 
 module.exports = {
+  getAuthSession,
+  setAuthSession,
+  deleteAuthSessions,
+  getLoginLink,
+  setLoginLink,
+  deleteLoginLinks,
   setOrder,
   getOrderSession,
   setOrderSession,
+  setProduct,
   getProductById,
   getProductsByHandle,
-  setProduct,
   getStripeAccount,
   setUser,
+  getUserByHandle,
   getUserExists
 };
 

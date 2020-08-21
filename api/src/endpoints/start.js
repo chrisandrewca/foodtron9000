@@ -1,3 +1,4 @@
+const authService = require('../auth/auth');
 const apiValidation = require('../validation/api-validation');
 const emailService = require('../comms/email');
 const fileStore = require('../storage/file');
@@ -71,7 +72,9 @@ router.post('/', multer.single('photo'), async (req, res) => {
   }
 
   try {
+
     await mongoStore.setUser(body, body);
+    await authService.setAuthSession(body);
 
     const photos = await photoService.saveFromFiles({ files: [file] });
     await mongoStore.setProduct(body, { ...body, photos });

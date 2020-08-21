@@ -6,7 +6,7 @@ const uuid = require('uuid').v4;
 // TODO future - this can be generalized to createSession('name')
 const orderSession = async (req, res, next) => {
 
-  const createOrderSession = async (id) => {
+  const setOrderSession = async (id) => {
 
     const { orderSession, validationError } = await apiValidation.orderSession({
       orderSession: {
@@ -39,7 +39,7 @@ const orderSession = async (req, res, next) => {
   req.scoped.orderSession = await mongoStore.getOrderSession({ id: orderSessionId });
 
   if (!req.scoped.orderSession) {
-    req.scoped.orderSession = await createOrderSession(uuid());
+    req.scoped.orderSession = await setOrderSession(uuid());
   }
 
   next();
