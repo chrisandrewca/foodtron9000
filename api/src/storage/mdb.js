@@ -5,8 +5,21 @@ const getOrderSession = async ({ id }) =>
   await cmd(async db =>
     await db.collection('orderSession').findOne({ id }));
 
+const setOrder = async ({
+  customer,
+  handle,
+  products,
+  stripe,
+  id = uuid()
+}) =>
+  await cmd(async db =>
+    await db.collection('order').updateOne(
+      { handle, id },
+      { $set: { customer, handle, id, products, stripe } },
+      { upsert: true }));
+
 // TODO is it worth it to imply that the key id is required? is it implied?
-    // possibly just accept a single destructure
+// possibly just accept a single destructure
 const setOrderSession = async ({ id }, { products }) =>
   await cmd(async db =>
     await db.collection('orderSession').updateOne(
@@ -30,6 +43,10 @@ const setProduct = async ({ handle, id = uuid() }, { description, name, photos, 
       { $set: { description, id, name, photos, price } },
       { upsert: true }));
 
+const getStripeAccount = async ({ handle }) =>
+  await cmd(async db =>
+    await db.collection('stripeAccount').findOne({ handle }));
+
 const setUser = async ({ email, handle }, { }) =>
   await cmd(async db =>
     await db.collection('user').updateOne(
@@ -42,11 +59,13 @@ const getUserExists = async ({ email, handle }) =>
     await db.collection('user').findOne({ $or: [{ email }, { handle }] }));
 
 module.exports = {
+  setOrder,
   getOrderSession,
   setOrderSession,
   getProductById,
   getProductsByHandle,
   setProduct,
+  getStripeAccount,
   setUser,
   getUserExists
 };

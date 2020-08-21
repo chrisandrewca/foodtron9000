@@ -1,20 +1,25 @@
 const gotHttp = require('got');
 
-const sendOrderPlacedEmail = async ({ customer, productsOrdered, user }) => {
+// TODO images...?
+const sendOrderPlacedEmail = async ({ order: { customer, products }, user }) => {
   try {
     await gotHttp.post(`https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`, {
       headers: {
         Authorization: `Basic ${Buffer.from(`api:${process.env.MAILGUN_PRIVATE}`).toString('base64')}`,
       },
       form: {
-        from: "Chris from Food-Tron 9000 <chris@foodtron9000.com>",
+        from: "Food-Tron 9000 <chris@foodtron9000.com>",
         html: `
-          <p>An order has been placed by ${customer.email}</p>
+          <p>Order placed by ${customer.name} <${customer.email}></p>
           <ul>
-            ${productsOrdered}
-          </ul>`,
+          ${products.map(({ name, note, quantity }) =>
+          `<li>
+            ${name} x${quantity} ${note ? `<b>${note}</b>` : ''}
+          </li>`).join('\n')}
+          </ul>
+          <p>Thanks for using the Food-Tron 9000, ${user.handle}!</p>`,
         to: `${user.email}`,
-        subject: "Order from Food-Tron 9000",
+        subject: "Order placed",
       }
     });
   } catch (mailgunError) {
@@ -24,20 +29,27 @@ const sendOrderPlacedEmail = async ({ customer, productsOrdered, user }) => {
   }
 };
 
-const sendCheckoutWithoutStripeAccountEmail = async ({ user }) => {
+const sendCheckoutWithoutStripeAccountEmail = async ({ lineItems, user }) => {
   try {
     await gotHttp.post(`https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`, {
       headers: {
         Authorization: `Basic ${Buffer.from(`api:${process.env.MAILGUN_PRIVATE}`).toString('base64')}`,
       },
       form: {
-        from: "Chris from Food-Tron 9000 <chris@foodtron9000.com>",
+        from: "Food-Tron 9000 <chris@foodtron9000.com>",
         html: `
           <p>An cws has been placed by TODO</p>
+          <ul>
+          ${lineItems.map(({ price_data: { product_data: { images, name, metadata: { note } } }, quantity }) =>
+          `<li>
+            <img height="72px" src="https://${process.env.RUNTIME_DOMAIN}/media/72/${images[0].split('/').pop()}" width="72px" />
+            ${name} x${quantity} ${note ? `<b>${note}</b>` : ''}
+          </li>`)}
+          </ul>
           <p>TODO incentive text</p>
           <p>Signup with stripe account direct link</p>`,
         to: `${user.email}`,
-        subject: "TODO cws from Food-Tron 9000",
+        subject: "Customer wants to place an order",
       }
     });
   } catch (mailgunError) {
