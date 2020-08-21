@@ -29,7 +29,7 @@ const orderSession = async (req, res, next) => {
 
   req.scoped.orderSession = await mongoStore.getOrderSession({ id: cookies.order || undefined });
 
-  if (!orderSession) {
+  if (!req.scoped.orderSession) {
     req.scoped.orderSession = await createOrderSession(uuid());
   }
 
