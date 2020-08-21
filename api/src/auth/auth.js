@@ -1,6 +1,6 @@
 const cookie = require('cookie');
 const mongoStore = require('../storage/mdb');
-const uuid = require('uuid');
+const uuid = require('uuid').v4;
 
 /*
  * The URL is the password (user identifier). Send via HTTPS.
@@ -21,7 +21,7 @@ const getLoginLink = async ({ handle }) => {
   return `https://${process.env.RUNTIME_DOMAIN}/api/auth?key=${key}`;
 };
 
-const setAuthSession = async ({ handle }) => {
+const setAuthSession = async (res, { handle }) => {
 
   const sessionId = uuid();
 

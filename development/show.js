@@ -2,6 +2,12 @@ require('dotenv').config();
 const fs = require('fs/promises');
 const mongoStore = require('./development-mdb');
 
+const showAuthSessions = async () =>
+  console.dir(await mongoStore.findAllInCollection('authSession'), { depth: null });
+
+const showLoginLinks = async () =>
+  console.dir(await mongoStore.findAllInCollection('loginLink'), { depth: null });
+
 const showOrderSessions = async () =>
   console.dir(await mongoStore.findAllInCollection('orderSession'), { depth: null });
 
@@ -24,6 +30,8 @@ const showWwwMedia = async () => {
 
 const args = process.argv.slice(2);
 const funcs = {
+  authSession: showAuthSessions,
+  loginLink: showLoginLinks,
   orderSession: showOrderSessions,
   product: showProducts,
   user: showUsers,

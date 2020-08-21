@@ -2,6 +2,12 @@ require('dotenv').config();
 const fs = require('fs/promises');
 const mongoStore = require('./development-mdb');
 
+const clearAuthSessions = async () =>
+  await mongoStore.clearAllInCollection('authSession');
+
+const clearLoginLinks = async () =>
+  await mongoStore.clearAllInCollection('loginLink');
+
 const clearOrderSessions = async () =>
   await mongoStore.clearAllInCollection('orderSession');
 
@@ -26,6 +32,8 @@ const clearWwwMedia = async () => {
 
 const args = process.argv.slice(2);
 const funcs = {
+  authSession: clearAuthSessions,
+  loginLink: clearLoginLinks,
   orderSession: clearOrderSessions,
   product: clearProducts,
   user: clearUsers,

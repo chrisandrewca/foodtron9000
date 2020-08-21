@@ -166,11 +166,12 @@ const profileGet = async ({ params }) => {
 
   const schema = joi.object({
     params: joi.object({
-      handle: joi.string().required() // TODO handle syntax
+      handle: joi.string().pattern(/^[A-Za-z-_~]+$/).required()
         .label('handle')
         .messages({
           'any.required': 'Your @handle is required.',
-          'string.empty': 'Your @handle is required.'
+          'string.empty': 'Your @handle is required.',
+          'string.pattern.base': 'Your @handle is required.'
         })
     }).required()
   });
@@ -196,18 +197,19 @@ const startPost = async ({ body, file }) => {
           'string.empty': 'Your email is required.',
           'string.pattern.base': 'Your email is required.'
         }),
-      handle: joi.string().required()
+      handle: joi.string().pattern(/^[A-Za-z-_~]+$/).required()
         .label('handle')
         .messages({
           'any.required': 'Your @handle is required.',
-          'string.empty': 'Your @handle is required.'
-        }), // TODO @ + chars
+          'string.empty': 'Your @handle is required.',
+          'string.pattern.base': 'Your @handle is required.'
+        }),
       name: joi.string().required()
         .label('name')
         .messages({
           'any.required': 'Your menu item is required.',
           'string.empty': 'Your menu item is required.'
-        }), // TODO chars
+        }),
       price: joi.number().precision(2).greater(0).required()
         .label('price')
         .messages({

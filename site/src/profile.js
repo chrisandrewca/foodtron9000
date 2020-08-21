@@ -18,7 +18,9 @@ export const loadEffect = async () => {
 
   // TODO error handling
   const order = await Api.getOrder();
-  const profile = await Api.getProfile();
+
+  // warning: scheme set in app.js https://<domain>/handle
+  const profile = await Api.getProfile(window.location.pathname.split('/').pop());
 
   const state = setState(state => ({
     ...state,

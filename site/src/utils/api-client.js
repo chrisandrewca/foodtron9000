@@ -75,7 +75,7 @@ export const getProductById = async (id) => {
 
 export const getProfile = async (handle) => {
 
-  const result = await fetch('/api/profile/chris', {
+  const result = await fetch(`/api/profile/${handle}`, {
     headers: { accept: 'application/json' },
     method: 'GET'
   });

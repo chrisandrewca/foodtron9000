@@ -5,9 +5,8 @@ const App = async () => {
   const pages = [
     { path: /^[/]$/, load: async () => (await import('./home')) },
     { path: /^[/]manage-product$/, load: async () => (await import('./manage-product')) },
-    { path: /^[/]profile$/, load: async () => (await import('./profile')) },
-    { path: /^[/]profile-product$/, load: async () => (await import('./profile-product')) }
-    // TODO /chris - requires safe names
+    { path: /^[/]profile-product$/, load: async () => (await import('./profile-product')) },
+    { path: /^[/][A-Za-z-_~]+$/, load: async () => (await import('./profile')) } // warning: scheme used by profile.js
   ];
 
   const renderPage = async () => {

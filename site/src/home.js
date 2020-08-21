@@ -67,6 +67,20 @@ const handleSubmit = async ({ e, fields }) => {
 
   e.preventDefault();
 
+  const { handle } = fields;
+  if (handle
+    && handle.value
+    && '@' === fields.handle.value[0]) {
+    handle.value = handle.value.slice(1);
+  }
+
+  fields = {
+    ...fields,
+    handle: {
+      ...fields.handle
+    }
+  };
+
   const start = await Api.start(fields);
   const { error } = start;
 
@@ -87,7 +101,7 @@ const handleSubmit = async ({ e, fields }) => {
     setTimeout(() => alert(state.errorText), 1);
 
   } else {
-    setLocation('/profile');
+    setLocation(`/${fields.handle.value}`);
   }
 };
 
