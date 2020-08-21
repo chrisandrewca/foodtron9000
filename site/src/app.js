@@ -1,5 +1,4 @@
 import { matchLocation, onLocationChanged } from './utils/location';
-import { update } from './utils/render';
 
 const App = async () => {
 

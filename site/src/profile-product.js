@@ -12,7 +12,7 @@ export const loadState = async () => {
     loading: true
   }));
 
-  update(ProfileProduct(state));
+  await update(ProfileProduct(state));
 };
 
 export const loadEffect = async () => {

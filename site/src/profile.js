@@ -11,7 +11,7 @@ export const loadState = async () => {
     order: { products: [] } // warning: so we can load as much as the page as we can for a snappy response
   }));
 
-  update(Profile(state));
+  await update(Profile(state));
 };
 
 export const loadEffect = async () => {
@@ -27,7 +27,7 @@ export const loadEffect = async () => {
     profile
   }));
 
-  update(Profile(state));
+  await update(Profile(state));
 };
 
 const handleBuy = async (e) => {
@@ -524,10 +524,9 @@ const Profile = ({ loading, order, profile }) => html`
   </div>
   <!-- End of container -->
   </header>
-
   <main>
   <div class="container">
-    ${loading ? html`<div class="loader"></div>` : html`
+    ${loading ? html`loading` : html`
 
     <div class="gallery">
       ${profile && profile.products.map(({ id, photos: [photo] }) => html`

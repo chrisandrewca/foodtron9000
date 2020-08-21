@@ -9,7 +9,7 @@ export const loadState = async () => {
   const dpr = window.devicePixelRatio;
   const state = setState(() => ({ dpr, fields: {} }));
 
-  update(Home(state));
+  await update(Home(state));
 };
 
 export const loadEffect = async () => { };

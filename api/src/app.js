@@ -16,7 +16,7 @@ app.use(express.json({ verify: (req, res, buf, enc) => {
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
-  req.scoped = {};
+  req.scoped = {}; // reset the scope for each request
   next();
 });
 

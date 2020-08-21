@@ -7,7 +7,7 @@ export const loadState = async () => {
 
   const state = setState(() => ({ fields: {} }));
 
-  update(ManageProduct(state));
+  await update(ManageProduct(state));
 };
 
 export const loadEffect = async () => { };

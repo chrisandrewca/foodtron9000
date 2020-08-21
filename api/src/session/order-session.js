@@ -5,15 +5,14 @@ const uuid = require('uuid').v4;
 
 const orderSession = async (req, res, next) => {
 
-  let orderSession;
+  const createOrderSession = async (id) => {
 
-  // TODO it would be really cool to make this code more functional
-  const cookies = cookie.parse(req.headers.cookie || '');
-  if (!cookies.order) {
+    const orderSession = { id, products: [] };
+    // TODO devops/SRE - notify team if there's an error here
+    await apiValidation.orderSession({ orderSession });
 
-    const id = uuid();
+    await mongoStore.setOrderSession(orderSession, orderSession);
 
-    // TODO per user secret for signing id value
     res.setHeader('Set-Cookie', cookie.serialize('order', id, {
       domain: process.env.RUNTIME_DOMAIN,
       httpOnly: true,
@@ -23,19 +22,16 @@ const orderSession = async (req, res, next) => {
       secure: true
     }));
 
-    // TODO devops/SRE - notify team if there's an error here
-    orderSession = { id, products: [] };
-    await apiValidation.orderSession({ orderSession });
+    return orderSession;
+  };
 
-    await mongoStore.setOrderSession(orderSession, orderSession);
-  } else {
+  const cookies = cookie.parse(req.headers.cookie || '');
 
-    orderSession = await mongoStore.getOrderSession({ id: cookies.order });
-    // TODO consider validating / SRE notice
+  req.scoped.orderSession = await mongoStore.getOrderSession({ id: cookies.order || undefined });
+
+  if (!orderSession) {
+    req.scoped.orderSession = await createOrderSession(uuid());
   }
-
-  console.log('orderSession', { orderSession });
-  req.scoped.orderSession = orderSession;
 
   next();
 };
