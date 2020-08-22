@@ -70,7 +70,7 @@ const handleSubmit = async ({ e, fields }) => {
   const { handle } = fields;
   if (handle
     && handle.value
-    && '@' === fields.handle.value[0]) {
+    && '@' === handle.value[0]) {
     handle.value = handle.value.slice(1);
   }
 
@@ -250,8 +250,8 @@ const Home = ({ dpr, fields }) => html`
     </picture>
 
     <div class="headers">
-      <h1>Sell your food online - right now. Seriously.</h1>
-      <h2>No experience required &#9996; No bullshit!</h2>
+      <h1>Sell your food to everyone, anywhere 🌎</h1>
+      <h2>Instantly at your fingertips ✌</h2>
     </div>
     <div class="start">
       <form class="signup">
@@ -261,7 +261,7 @@ const Home = ({ dpr, fields }) => html`
               class="signup-button snap-photo"
               tabIndex="0"
             >
-              &#128248; ${fileLabel(fields)}
+              📸 ${fileLabel(fields)}
             </a>
             ${fields.photo && fields.photo.src ? html`
               <img class="menu-item-photo" .src=${fields.photo.src} />` : nothing}
@@ -279,7 +279,7 @@ const Home = ({ dpr, fields }) => html`
           class="signup-input"
           @change=${handleChange}
           name="name"
-          placeholder="&#127829; Menu item"
+          placeholder="🍕 Menu item"
           type="text"
         />
         <input
@@ -288,28 +288,28 @@ const Home = ({ dpr, fields }) => html`
           name="price"
           inputmode='decimal'
           pattern='\$?\d{1,6}.\d\d'
-          placeholder="&#128178; Price"
+          placeholder="💲 Price"
           type="text"
         />
         <input
           class="signup-input"
           @change=${handleChange}
           name="handle"
-          placeholder="&#128038; @handle"
+          placeholder="🐤 @handle"
           type="text"
         />
         <input
           class="signup-input"
           @change=${handleChange}
           name="email"
-          placeholder="&#9993; Email"
+          placeholder="📧 Email"
           type="text"
         />
         <input
           class="signup-button signup-input start-button"
           @click=${(e) => handleSubmit({ e, fields })}
           type="submit"
-          value="&#129297; Start selling!"
+          value="🚀 Start selling!"
         />
       </form>
     </div>
