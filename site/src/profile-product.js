@@ -69,7 +69,7 @@ const handleSubmit = async ({ e, fields, product }) => {
     await update(ProfileProduct(state));
   } else {
 
-    setLocation('/profile');
+    setLocation(`/${product.handle}`);
   }
 };
 

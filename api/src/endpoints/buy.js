@@ -20,7 +20,9 @@ router.post('/', async (req, res) => {
     });
   }
 
-  const handle = 'chris'; // TODO
+  // TODO api validation for req.body
+
+  const { handle } = req.body;
   // TODO from mongo
   // TODO billing/business model
   const currency = 'USD';
@@ -32,7 +34,7 @@ router.post('/', async (req, res) => {
     const { description, name, photos, price } = await mongoStore.getProductById({ id });
 
     const product_data = {
-      description,
+      description: description ? description : undefined,
       images: photos.map(({ filename }) => `https://${process.env.RUNTIME_DOMAIN}/media/1080/${filename}.jpeg`),
       metadata: {
         id,
@@ -44,7 +46,7 @@ router.post('/', async (req, res) => {
     const price_data = {
       currency: 'USD',
       product_data,
-      unit_amount: Number(price) * 100
+      unit_amount: Math.round(Number(price) * 100)
     };
 
     line_items.push({
@@ -57,11 +59,13 @@ router.post('/', async (req, res) => {
     (await mongoStore.getStripeAccount({ handle }))
     || { stripe_user_id: process.env.STRIPE_ACCOUNT_ID };
 
-  // TODO user
   if (process.env.STRIPE_ACCOUNT_ID === stripe_user_id) {
+
+    const user = await mongoStore.getUserByHandle({ handle });
+
     await emailService.sendCheckoutWithoutStripeAccountEmail({
       lineItems: line_items,
-      user: { handle: 'chris', email: '' }
+      user
     });
   }
 
@@ -72,7 +76,7 @@ router.post('/', async (req, res) => {
   };
 
   const checkout = {
-    cancel_url: `https://${process.env.RUNTIME_DOMAIN}/profile`, // TODO handle in url
+    cancel_url: `https://${process.env.RUNTIME_DOMAIN}/${handle}`,
     metadata: {
       handle // warning: used in stripe.js for handling webhook events
     },
@@ -80,7 +84,7 @@ router.post('/', async (req, res) => {
     line_items,
     payment_intent_data,
     payment_method_types: ['card'], // TODO other options?
-    success_url: `https://${process.env.RUNTIME_DOMAIN}/profile?session_id={CHECKOUT_SESSION_ID}` // TODO handle in url
+    success_url: `https://${process.env.RUNTIME_DOMAIN}/${handle}?session_id={CHECKOUT_SESSION_ID}`
   };
 
   const session = await stripe

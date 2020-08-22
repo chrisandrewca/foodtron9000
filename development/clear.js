@@ -8,6 +8,9 @@ const clearAuthSessions = async () =>
 const clearLoginLinks = async () =>
   await mongoStore.clearAllInCollection('loginLink');
 
+const clearOrder = async () =>
+  await mongoStore.clearAllInCollection('order');
+
 const clearOrderSessions = async () =>
   await mongoStore.clearAllInCollection('orderSession');
 
@@ -34,6 +37,7 @@ const args = process.argv.slice(2);
 const funcs = {
   authSession: clearAuthSessions,
   loginLink: clearLoginLinks,
+  order: clearOrder,
   orderSession: clearOrderSessions,
   product: clearProducts,
   user: clearUsers,

@@ -28,7 +28,7 @@ export const addProductToOrder = async ({ fields, product }) => {
   const result = await fetch('/api/order', {
     body: JSON.stringify(body),
     headers: {
-      accept: 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     },
     method: 'POST'
@@ -41,11 +41,13 @@ export const addProductToOrder = async ({ fields, product }) => {
   return order;
 };
 
-export const buy = async () => {
+export const buy = async ({ handle }) => {
 
   const result = await fetch('/api/buy', {
+    body: JSON.stringify({ handle }),
     headers: {
-      accept: 'application/json'
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
     },
     method: 'POST'
   });
@@ -54,10 +56,13 @@ export const buy = async () => {
   return buy;
 };
 
-export const getOrder = async () => {
+export const getOrder = async (sessionId) => {
 
-  const result = await fetch('/api/order', {
-    headers: { accept: 'application/json' },
+  const params = new URLSearchParams();
+  if (sessionId) params.set('sessionId', sessionId);
+
+  const result = await fetch(`/api/order?${params.toString()}`, {
+    headers: { Accept: 'application/json' },
     method: 'GET'
   });
 
@@ -76,7 +81,7 @@ export const getProductById = async (id) => {
 export const getProfile = async (handle) => {
 
   const result = await fetch(`/api/profile/${handle}`, {
-    headers: { accept: 'application/json' },
+    headers: { Accept: 'application/json' },
     method: 'GET'
   });
 
@@ -88,13 +93,28 @@ export const setProduct = async (fields) => {
 
   const result = await fetch('/api/product', {
     body: getFormFromFields(fields),
-    headers: { 'accept': 'json' },
+    headers: { Accept: 'application/json' },
     method: 'POST'
   });
 
   const { product } = await result.json();
   return product;
 };
+
+export const getReceipt = async ({ handle, sessionId }) => {
+
+  const params = new URLSearchParams();
+  params.set('handle', handle);
+  params.set('sessionId', sessionId);
+
+  const result = await fetch(`/api/stripe/receipt?${params.toString()}`, {
+    header: { Accept: 'application/json' },
+    method: 'GET'
+  });
+
+  const { receipt } = await result.json();
+  return receipt;
+}
 
 export const start = async (fields) => {
 

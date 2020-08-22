@@ -1,11 +1,30 @@
 const emailService = require('../comms/email');
 const mongoStore = require('../storage/mdb');
 const router = require('express').Router();
-const Stripe = require('stripe');
+const stripe = require('stripe')(process.env.STRIPE_PRIVATE);
+
+router.get('/receipt', async (req, res) => {
+
+  // TODO api validation
+  const { handle, sessionId } = req.query;
+
+  const { stripe_user_id } =
+    (await mongoStore.getStripeAccount({ handle }))
+    || { stripe_user_id: process.env.STRIPE_ACCOUNT_ID };
+
+  const { payment_intent } = await stripe
+    .checkout
+    .sessions
+    .retrieve(sessionId, { stripeAccount: stripe_user_id });
+
+  const { charges: { data: [{ receipt_url: receiptUrl }] } } = await stripe
+    .paymentIntents
+    .retrieve(payment_intent, { stripeAccount: stripe_user_id });
+  
+  return res.json({ receipt: { receiptUrl }});
+});
 
 router.post('/hook', async (req, res) => {
-
-  const stripe = Stripe(process.env.STRIPE_PRIVATE);
 
   let event;
   try {
@@ -77,9 +96,7 @@ router.post('/hook', async (req, res) => {
     // const dollarSales = money.tallyCheckoutSale(event.data.object.display_items);
     // await db.incrementStat(handle, 'dollarSales', dollarSales);
 
-    // TODO
-    //const user = await mongoStore.getUser({ handle });
-    const user = { handle: 'chris', email: '' };
+    const user = await mongoStore.getUserByHandle({ handle });
 
     await emailService.sendOrderPlacedEmail({ order, user });
   }

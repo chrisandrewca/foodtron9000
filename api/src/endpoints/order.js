@@ -6,6 +6,16 @@ router.get('/', async (req, res) => {
 
   const { orderSession } = req.scoped;
 
+  if (req.query.sessionId) {
+
+    // TODO api validation on this mutation
+    orderSession.products = [];
+
+    await mongoStore.setOrderSession(orderSession, orderSession);
+
+    req.scoped.orderSession = orderSession;
+  }
+
   return res.json({ order: orderSession });
 });
 
