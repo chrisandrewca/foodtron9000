@@ -6,7 +6,7 @@ const App = async () => {
     { path: /^[/]$/, load: async () => (await import('./home')) },
     { path: /^[/]manage-product$/, load: async () => (await import('./manage-product')) },
     { path: /^[/]profile-product$/, load: async () => (await import('./profile-product')) },
-    { path: /^[/][A-Za-z-_~]+$/, load: async () => (await import('./profile')) } // warning: scheme used by profile.js
+    { path: /^[/][A-Za-z0-9-_~]+$/, load: async () => (await import('./profile')) } // warning: scheme used by profile.js
   ];
 
   const renderPage = async () => {
