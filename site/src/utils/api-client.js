@@ -227,6 +227,7 @@ const getFormFromFields = (fields) => {
   for (const key in fields) {
 
     const { value } = fields[key];
+    if (value === undefined) continue;
 
     if (!Array.isArray(value)) {
 
@@ -247,6 +248,10 @@ const getObjectFromFields = (fields) => {
   const object = {};
 
   for (const key in fields) {
+
+    const { value } = fields[key];
+    if (value === undefined) continue;
+
     object[key] = fields[key].value;
   }
 

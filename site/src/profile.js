@@ -27,7 +27,8 @@ export const loadEffect = async () => {
   // warning: scheme set in app.js https://<domain>/handle
   const profile = await Api.getProfile(handle);
 
-  if (profile.error.code === 'handle') {
+  if (profile.error
+    && profile.error.code === 'handle') {
     setLocation('/');
   }
 
@@ -48,6 +49,7 @@ export const loadEffect = async () => {
 
   } else {
 
+    // TODO rename to stripe session id
     const sessionId = params.get('session_id');
 
     const receipt = await Api.getReceipt({ handle, sessionId });

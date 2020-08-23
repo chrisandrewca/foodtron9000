@@ -297,9 +297,9 @@ const startPost = async ({ body, file }) => {
       handle: joi.string().pattern(/^[A-Za-z0-9-_~]+$/).required()
         .label('handle')
         .messages({
-          'any.required': 'Your @handle is required.',
-          'string.empty': 'Your @handle is required.',
-          'string.pattern.base': 'Your @handle is required.'
+          'any.required': 'Your @handle can only include alphabet, numbers, and - ~ _',
+          'string.empty': 'Your @handle can only include alphabet, numbers, and - ~ _',
+          'string.pattern.base': 'Your @handle can only include alphabet, numbers, and - ~ _'
         }),
       name: joi.string().required()
         .label('name')
