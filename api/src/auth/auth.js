@@ -45,13 +45,13 @@ const validateAuthSession = async (req, res, next) => {
   const { sessionId } = cookie.parse(req.headers.cookie || '');
 
   // notice: users can be revoked by deleting their session from the store
-  const { handle } = await mongoStore.getAuthSession({ sessionId });
+  const authSession = await mongoStore.getAuthSession({ sessionId });
 
-  if (!handle) {
+  if (!authSession) {
     return res.status(401).end();
   }
 
-  req.scoped.user = await mongoStore.getUserByHandle({ handle });
+  req.scoped.user = await mongoStore.getUserByHandle({ handle: authSession.handle });
 
   next();
 };
@@ -60,7 +60,13 @@ const validateLoginLink = async ({ key }) => {
 
   const now = Date.now();
 
-  const { handle, key: serverKey, expiry } = await mongoStore.getLoginLink({ key });
+  const loginLink = await mongoStore.getLoginLink({ key });
+
+  if (!loginLink) {
+    return;
+  }
+
+  const { handle, key: serverKey, expiry } = loginLink;
 
   if (handle) {
     await mongoStore.deleteLoginLinks({ handle });

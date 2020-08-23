@@ -36,9 +36,22 @@ const clearWwwMedia = async () => {
   }
 };
 
+const clearEverything = async () => {
+
+  await clearAuthSessions();
+  await clearLoginLinks();
+  await clearOrder();
+  await clearOrderSessions();
+  await clearProducts();
+  await clearStripeAccounts();
+  await clearUsers();
+  await clearWwwMedia();
+};
+
 const args = process.argv.slice(2);
 const funcs = {
   authSession: clearAuthSessions,
+  everything: clearEverything,
   loginLink: clearLoginLinks,
   order: clearOrder,
   orderSession: clearOrderSessions,

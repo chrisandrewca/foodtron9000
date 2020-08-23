@@ -22,7 +22,6 @@ router.get('/login', async (req, res) => {
       const { email, handle } = userExists;
 
       const loginLink = await auth.getLoginLink({ handle });
-      console.log({ loginLink });
 
       await emailService.sendLoginEmail({ email, handle, loginLink });
 
@@ -47,7 +46,6 @@ router.get('/login', async (req, res) => {
     }
 
     const user = await auth.validateLoginLink({ key });
-    console.log({ key, user });
 
     if (!user) {
       return res.redirect('/');

@@ -28,10 +28,17 @@ router.post('/', async (req, res) => {
   const currency = 'USD';
 
   const line_items = [];
-  for (const product of orderSession.products) {
+  for (const { id, note, quantity } of orderSession.products) {
 
-    const { id, note, quantity } = product;
-    const { description, name, photos, price } = await mongoStore.getProductById({ id });
+    const product = await mongoStore.getProductById({ id });
+
+    if (!product) {
+      // TODO product has been deleted - won't show up in the checkout sale...
+        // somehow notify user...
+      continue;
+    }
+
+    const { description, name, photos, price } = product;
 
     const product_data = {
       description: description ? description : undefined,
@@ -44,7 +51,7 @@ router.post('/', async (req, res) => {
     };
 
     const price_data = {
-      currency: 'USD',
+      currency,
       product_data,
       unit_amount: Math.round(Number(price) * 100)
     };

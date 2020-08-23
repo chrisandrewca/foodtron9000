@@ -43,6 +43,7 @@ router.get('/:handle', async (req, res) => {
       });
   }
 
+  // safe since guarded with mongoStore.getUserExists
   const products = await mongoStore.getProductsByHandle(params);
   const { description, photo } = await mongoStore.getUserByHandle(params);
 

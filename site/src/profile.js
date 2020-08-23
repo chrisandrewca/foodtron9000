@@ -27,7 +27,7 @@ export const loadEffect = async () => {
   // warning: scheme set in app.js https://<domain>/handle
   const profile = await Api.getProfile(handle);
 
-  if (!profile) {
+  if (profile.error.code === 'handle') {
     setLocation('/');
   }
 
