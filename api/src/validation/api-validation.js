@@ -20,30 +20,28 @@ const orderPost = async ({ body }) => {
           'any.required': 'Your product ID is required.',
           'string.empty': 'Your product ID is required.'
         }),
-      note: joi.string().required()
-        .label('note')
-        .messages({
-          'any.required': 'Your note is required.',
-          'string.empty': 'Your note is required.',
-        }),
+      note: joi.string()
+        .label('note'),
       quantity: joi.number().precision(0).greater(0).required()
         .label('quantity')
         .messages({
-          'number.precision': 'Your quantity must be like "3".',
+          'number.base': 'Your quantity must be like "3".',
           'number.greater': 'Your quantity must be greater than 0.',
-          'any.required': 'Your quantity must be like "3".',
-          'number.base': 'Your quantity must be like "3".'
+          'number.precision': 'Your quantity must be like "3".',
+          'number.unsafe': 'Your quantity must be like "3".',
+          'any.required': 'Your quantity must be like "3".'
         })
     }).required()
   });
 
   try {
-    await schema.validateAsync({ body }, { abortEarly: false });
+
+    const data = await schema.validateAsync({ body }, { abortEarly: false });
+    return { body: data.body };
+
   } catch (validationError) {
     return { body, validationError };
   }
-
-  return { body };
 };
 
 const orderSession = async ({ orderSession }) => {
@@ -73,10 +71,11 @@ const orderSession = async ({ orderSession }) => {
         quantity: joi.number().precision(0).greater(0).required()
           .label('quantity')
           .messages({
-            'number.precision': 'Your quantity must be like "3".',
+            'number.base': 'Your quantity must be like "3".',
             'number.greater': 'Your quantity must be greater than 0.',
-            'any.required': 'Your quantity must be like "3".',
-            'number.base': 'Your quantity must be like "3".'
+            'number.precision': 'Your quantity must be like "3".',
+            'number.unsafe': 'Your quantity must be like "3".',
+            'any.required': 'Your quantity must be like "3".'
           })
       })).required()
         .label('products')
@@ -87,12 +86,13 @@ const orderSession = async ({ orderSession }) => {
   });
 
   try {
-    await schema.validateAsync({ orderSession }, { abortEarly: false })
+
+    const data = await schema.validateAsync({ orderSession }, { abortEarly: false })
+    return { orderSession: data.orderSession };
+
   } catch (validationError) {
     return { orderSession, validationError };
   }
-
-  return { orderSession };
 };
 
 const productGetById = async ({ params }) => {
@@ -109,17 +109,18 @@ const productGetById = async ({ params }) => {
   });
 
   try {
-    await schema.validateAsync({ params }, { abortEarly: false });
+
+    const data = await schema.validateAsync({ params }, { abortEarly: false });
+    return { params: data.params };
+
   } catch (validationError) {
     return { params, validationError };
   }
-
-  return { params };
 };
 
 // TODO splitup validation for patches which require photos
-  // since UI will send over photo field with '[object object]' string
-  // from - allowUnknown for multer files
+// since UI will send over photo field with '[object object]' string
+// from - allowUnknown for multer files
 const productPatch = async ({ body, files }) => {
 
   const schema = joi.object({
@@ -146,10 +147,11 @@ const productPatch = async ({ body, files }) => {
       price: joi.number().precision(2).greater(0).required()
         .label('price')
         .messages({
+          'number.base': 'Your price must be like "4.99".',
+          'number.greater': 'Your price must be like "4.99".',
           'number.precision': 'Your price must be like "4.99".',
-          'number.greater': 'Your price must be greater than 0.',
-          'any.required': 'Your price must be like "4.99".',
-          'number.base': 'Your price must be like "4.99".'
+          'number.unsafe': 'Your price must be like "4.99".',
+          'any.required': 'Your price must be like "4.99".'
         })
     }).required(),
     files: joi.array().items(joi.object({
@@ -160,12 +162,13 @@ const productPatch = async ({ body, files }) => {
   });
 
   try {
-    await schema.validateAsync({ body, files }, { abortEarly: false, allowUnknown: true });
+
+    const data = await schema.validateAsync({ body, files }, { abortEarly: false, allowUnknown: true });
+    return { body: data.body, files: data.files };
+
   } catch (validationError) {
     return { body, files, validationError };
   }
-
-  return { body, files };
 };
 
 const productPost = async ({ body, files }) => {
@@ -194,10 +197,11 @@ const productPost = async ({ body, files }) => {
       price: joi.number().precision(2).greater(0).required()
         .label('price')
         .messages({
+          'number.base': 'Your price must be like "4.99".',
+          'number.greater': 'Your price must be like "4.99".',
           'number.precision': 'Your price must be like "4.99".',
-          'number.greater': 'Your price must be greater than 0.',
-          'any.required': 'Your price must be like "4.99".',
-          'number.base': 'Your price must be like "4.99".'
+          'number.unsafe': 'Your price must be like "4.99".',
+          'any.required': 'Your price must be like "4.99".'
         })
     }).required(),
     files: joi.array().items(joi.object({
@@ -214,12 +218,13 @@ const productPost = async ({ body, files }) => {
   });
 
   try {
-    await schema.validateAsync({ body, files }, { abortEarly: false, allowUnknown: true });
+
+    const data = await schema.validateAsync({ body, files }, { abortEarly: false, allowUnknown: true });
+    return { body: data.body, files: data.files };
+
   } catch (validationError) {
     return { body, files, validationError };
   }
-
-  return { body, files };
 };
 
 const profileGet = async ({ params }) => {
@@ -237,17 +242,18 @@ const profileGet = async ({ params }) => {
   });
 
   try {
-    await schema.validateAsync({ params }, { abortEarly: false });
+
+    const data = await schema.validateAsync({ params }, { abortEarly: false });
+    return { params: data.params };
+
   } catch (validationError) {
     return { params, validationError };
   }
-
-  return { params };
 };
 
 // TODO splitup validation for patches which require photos
-  // since UI will send over photo field with '[object object]' string
-  // from - allowUnknown for multer files
+// since UI will send over photo field with '[object object]' string
+// from - allowUnknown for multer files
 const profilePatch = async ({ body, files }) => {
 
   const schema = joi.object({
@@ -274,12 +280,13 @@ const profilePatch = async ({ body, files }) => {
   });
 
   try {
-    await schema.validateAsync({ body, files }, { abortEarly: false, allowUnknown: true });
+
+    const data = await schema.validateAsync({ body, files }, { abortEarly: false, allowUnknown: true });
+    return { body: data.body, files: data.files };
+
   } catch (validationError) {
     return { body, files, validationError };
   }
-
-  return { body, files };
 };
 
 const startPost = async ({ body, file }) => {
@@ -310,10 +317,11 @@ const startPost = async ({ body, file }) => {
       price: joi.number().precision(2).greater(0).required()
         .label('price')
         .messages({
+          'number.base': 'Your price must be like "4.99".',
+          'number.greater': 'Your price must be like "4.99".',
           'number.precision': 'Your price must be like "4.99".',
-          'number.greater': 'Your price must be greater than 0.',
-          'any.required': 'Your price must be like "4.99".',
-          'number.base': 'Your price must be like "4.99".'
+          'number.unsafe': 'Your price must be like "4.99".',
+          'any.required': 'Your price must be like "4.99".'
         })
     }).required(),
     file: joi.object({
@@ -328,12 +336,13 @@ const startPost = async ({ body, file }) => {
   });
 
   try {
-    await schema.validateAsync({ body, file }, { abortEarly: false, allowUnknown: true })
+
+    const data = await schema.validateAsync({ body, file }, { abortEarly: false, allowUnknown: true });
+    return { body: data.body, file: data.file };
+
   } catch (validationError) {
     return { body, file, validationError };
   }
-
-  return { body, file };
 };
 
 module.exports = {

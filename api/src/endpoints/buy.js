@@ -53,7 +53,7 @@ router.post('/', async (req, res) => {
     const price_data = {
       currency,
       product_data,
-      unit_amount: Math.round(Number(price) * 100)
+      unit_amount: Math.round(price * 100)
     };
 
     line_items.push({

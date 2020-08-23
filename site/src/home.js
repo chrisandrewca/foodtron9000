@@ -67,19 +67,28 @@ const handleSubmit = async ({ e, fields }) => {
 
   e.preventDefault();
 
-  const { handle } = fields;
-  if (handle
-    && handle.value
-    && '@' === handle.value[0]) {
-    handle.value = handle.value.slice(1);
+  const handle = { ...fields.handle };
+  if (handle && handle.value) {
+
+    if ('@' === handle[0])
+      handle.value = handle.value.slice(1);
+
+    handle.value = handle.value.replace(/ /g, '');
   }
 
   fields = {
     ...fields,
-    handle: {
-      ...fields.handle
-    }
+    handle
   };
+
+  for (const key in fields) {
+
+    const { value } = fields[key];
+
+    if ('string' === typeof value) {
+      fields[key].value = value.trim();
+    }
+  }
 
   const start = await Api.start(fields);
   const { error } = start;
@@ -288,7 +297,7 @@ const Home = ({ dpr, fields }) => html`
           name="price"
           inputmode='decimal'
           placeholder="💲 Price"
-          type="text"
+          type="number"
         />
         <input
           class="signup-input"
