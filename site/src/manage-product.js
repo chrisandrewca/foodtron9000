@@ -1,16 +1,65 @@
 import * as Api from './utils/api-client';
-import { html } from 'lit-html';
+import { getSearchParams, setLocation } from './utils/location';
+import { html, nothing } from 'lit-html';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
 export const loadState = async () => {
 
-  const state = setState(() => ({ fields: {} }));
+  const params = getSearchParams();
+  if (!params.has('handle')) {
+    setLocation('/');
+  }
+
+  const state = setState(() => ({
+    fields: {
+      description: { value: '' },
+      name: { value: '' },
+      photos: {},
+      price: { value: '' }
+    },
+    handle: params.get('handle')
+  }));
 
   await update(ManageProduct(state));
 };
 
-export const loadEffect = async () => { };
+export const loadEffect = async () => {
+
+  const params = getSearchParams();
+
+  if (params.has('id')) {
+
+    const product = await Api.getProductById(params.get('id'));
+
+    const state = await setState(state => ({
+      ...state,
+      fields: {
+        ...state.fields,
+        description: {
+          ...state.fields.description,
+          value: product.description
+        },
+        name: {
+          ...state.fields.name,
+          value: product.name
+        },
+        photos: {
+          ...state.fields.photos,
+          // TODO webp/jpeg
+          value: product.photos.map(({ filename }) => ({ src: `/media/${filename}.jpeg` }))
+        },
+        price: {
+          ...state.fields.price,
+          value: product.price
+        }
+      },
+      id: product.id
+    }));
+
+    await update(ManageProduct(state));
+  }
+};
 
 const handleChange = async (e) => {
 
@@ -79,51 +128,97 @@ const handlePhotos = async (e) => {
   await update(ManageProduct(state));
 };
 
-const handleSubmit = async ({ e, fields }) => {
+const handleDelete = async ({ e, handle, id }) => {
 
   e.preventDefault();
-  await Api.setProduct(fields);
+
+  await Api.deleteProduct({ id });
+
+  setLocation(`/manage-profile?handle=${handle}`);
 };
 
-const ManageProduct = ({ fields }) => html`
+const handleSubmit = async ({ e, fields, handle, id }) => {
 
-  <h1>Manage product</h1>
-  <form>
+  e.preventDefault();
+
+  let error;
+  if (!id) {
+
+    error = (await Api.createProduct({ fields, handle })).error;
+  } else {
+
+    error = (await Api.updateProduct({ fields, id })).error;
+  }
+
+  if (error) {
+
+    const state = setState(state => {
+
+      const { errorText, fields } = Api.getFieldsFromError({ error, fields: state.fields });
+
+      return {
+        ...state,
+        errorText,
+        fields
+      };
+    });
+
+    await update(ManageProduct(state));
+    setTimeout(() => alert(state.errorText), 1);
+
+  } else {
+    setLocation(`/manage-profile?handle=${handle}`);
+  }
+};
+
+const ManageProduct = ({ fields, handle, id }) => html`
+
+<h1>Manage product</h1>
+<form>
+  <input
+    @change=${handlePhotos}
+    multiple
+    name="photos",
+    type="file"
+  />
+  <label>
+    Name
     <input
-      @change=${handlePhotos}
-      multiple
-      name="photos",
-      type="file"
+      @change=${handleChange}
+      name="name"
+      type="text"
+      .value=${fields.name.value}
     />
-    <label>
-      Name
-      <input
-        @change=${handleChange}
-        name="name"
-        type="text"
-      />
-    </label>
-    <label>
-      Price
-      <input
-        @change=${handleChange}
-        name="price"
-        type="text"
-      />
-    </label>
-    <label>
-      Description
-      <textarea
-        @change=${handleChange}
-        class=""
-        name="description"
-      ></textarea>
-    </label>
+  </label>
+  <label>
+    Price
     <input
-      @click=${(e) => handleSubmit({ e, fields })}
-      type="submit"
-      value="Save"
+      @change=${handleChange}
+      name="price"
+      type="text"
+      .value=${fields.price.value}
     />
-  </form>`;
+  </label>
+  <label>
+    Description
+    <textarea
+      @change=${handleChange}
+      class=""
+      name="description"
+      .value=${fields.description.value}
+    ></textarea>
+  </label>
+  ${ id ? html`
+  <input
+    @click=${(e) => handleDelete({ e, handle, id })}
+    type="submit"
+    value="Delete"
+  />` : nothing}
+  <input
+    @click=${(e) => handleSubmit({ e, fields, handle, id })}
+    type="submit"
+    value="Save"
+  />
+</form>`;
 
 export default ManageProduct;

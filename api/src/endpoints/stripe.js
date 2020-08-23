@@ -1,7 +1,55 @@
+const auth = require('../auth/auth');
 const emailService = require('../comms/email');
 const mongoStore = require('../storage/mdb');
 const router = require('express').Router();
 const stripe = require('stripe')(process.env.STRIPE_PRIVATE);
+
+router.get('/authorize', auth.validateAuthSession, async (req, res) => {
+
+  const { email, handle } = req.scoped.user;
+  const stripeAccount = await mongoStore.getStripeAccount({ handle });
+
+  if (stripeAccount) {
+
+    // TODO is there another way to handle optional JSON responses client side?
+    return res.json({ authorize: {} });
+  } else {
+
+    const query = new URLSearchParams();
+    query.set('client_id', process.env.STRIPE_CONNECT_CLIENT_ID);
+    query.set('response_type', 'code');
+    query.set('scope', 'read_write');
+    query.set('state', handle); // TODO make more secure? CSRF warning: used in /authorize/grant
+    query.set('stripe_user[email]', email);
+
+    return res.json({
+      authorize: {
+        url: `https://connect.stripe.com/oauth/authorize?${query.toString()}`
+      }
+    });
+  }
+});
+
+router.get('/authorize/grant', async (req, res) => {
+
+  const stripeAccount = await stripe.oauth.token({
+    grant_type: 'authorization_code',
+    code: req.query.code
+  });
+
+  const { state: handle } = req.query;
+
+  const userExists = await mongoStore.getUserExists({ handle });
+
+  if (stripeAccount && userExists) {
+
+    await mongoStore.setStripeAccount({ handle, ...stripeAccount });
+
+    return res.redirect(`/manage-profile?handle=${handle}`);
+  }
+
+  return res.redirect('/');
+});
 
 router.get('/receipt', async (req, res) => {
 
@@ -20,8 +68,8 @@ router.get('/receipt', async (req, res) => {
   const { charges: { data: [{ receipt_url: receiptUrl }] } } = await stripe
     .paymentIntents
     .retrieve(payment_intent, { stripeAccount: stripe_user_id });
-  
-  return res.json({ receipt: { receiptUrl }});
+
+  return res.json({ receipt: { receiptUrl } });
 });
 
 router.post('/hook', async (req, res) => {

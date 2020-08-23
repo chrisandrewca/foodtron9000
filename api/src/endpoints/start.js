@@ -73,11 +73,20 @@ router.post('/', multer.single('photo'), async (req, res) => {
 
   try {
 
-    await mongoStore.setUser(body, body);
+    // TODO validation on payloads entering stores
+    // TODO validation on payloads exiting via response
+    // TODO shared file between API and UI with simple common constants
+      // like handle regex
+    await mongoStore.setUser({
+      ...body,
+      description: 'Pot stickers! Small plates! Oh my 🤤',
+      photo: { filename: 'chrisandrewca' }
+    });
+
     await authService.setAuthSession(res, body);
 
     const photos = await photoService.saveFromFiles({ files: [file] });
-    await mongoStore.setProduct(body, { ...body, photos });
+    await mongoStore.setProduct({ ...body, photos });
 
     await emailService.sendStartEmail(body);
 

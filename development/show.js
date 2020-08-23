@@ -17,6 +17,9 @@ const showOrderSessions = async () =>
 const showProducts = async () =>
   console.dir(await mongoStore.findAllInCollection('product'), { depth: null });
 
+const showStripeAccounts = async () =>
+  console.dir(await mongoStore.findAllInCollection('stripeAccount'), { depth: null });
+
 const showUsers = async () =>
   console.dir(await mongoStore.findAllInCollection('user'), { depth: null });
 
@@ -38,6 +41,7 @@ const funcs = {
   order: showOrder,
   orderSession: showOrderSessions,
   product: showProducts,
+  stripeAccount: showStripeAccounts,
   user: showUsers,
   wwwmedia: showWwwMedia,
 };

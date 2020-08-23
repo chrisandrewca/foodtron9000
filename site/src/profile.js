@@ -1,7 +1,7 @@
 import * as Api from './utils/api-client';
 import Anchor from './elements/anchor';
-import { getSearchParams } from './utils/location';
-import { html } from 'lit-html';
+import { getSearchParams, setLocation } from './utils/location';
+import { html, nothing } from 'lit-html';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
@@ -10,7 +10,9 @@ export const loadState = async () => {
   const state = setState(() => ({
     content: ProfileLoader(),
     // for 0 items / Place Order bar, so we can load as much as the page as we can for a snappy response
-    order: { products: [] }
+    order: { products: [] },
+    // for profile image
+    profile: { user: { photo: {} } }
   }));
 
   await update(Profile(state));
@@ -21,8 +23,13 @@ export const loadEffect = async () => {
   const handle = window.location.pathname.split('/').pop();
   const params = getSearchParams();
 
+  const authenticated = await Api.isAuthenticated();
   // warning: scheme set in app.js https://<domain>/handle
   const profile = await Api.getProfile(handle);
+
+  if (!profile) {
+    setLocation('/');
+  }
 
   let state;
   if (!params.has('session_id')) {
@@ -32,6 +39,7 @@ export const loadEffect = async () => {
 
     state = setState(state => ({
       ...state,
+      authenticated,
       content: ProfileGallery(profile),
       handle,
       order,
@@ -50,6 +58,7 @@ export const loadEffect = async () => {
 
     state = setState(state => ({
       ...state,
+      authenticated,
       content: ProfileThankYou({ handle, receipt }),
       handle,
       order,
@@ -128,7 +137,7 @@ const ProfileThankYou = ({ handle, receipt: { receiptUrl } }) => html`
   <p><a .href=${`/${handle}`}>Continue shopping</a></p>
 </div>`;
 
-const Profile = ({ content, handle, order }) => html`
+const Profile = ({ authenticated, content, handle, order, profile: { user } }) => html`
 
 <style type="text/css">
   :root {
@@ -562,13 +571,20 @@ const Profile = ({ content, handle, order }) => html`
 </style>
 
 <header>
-<h1 class="profile-user-name">janedoe_dsaaaaaaaaaaaaaaaaaaaaaaaaasadasdasddasdasdadadsadasdadadadadasdsa</h1>
+<h1 class="profile-user-name">${handle}</h1>
 <div class="container">
 
   <div class="profile">
 
     <div class="profile-image">
-      <img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
+      ${authenticated ? html`
+        <a href=${`/manage-profile?handle=${handle}`}>Edit profile</a>
+        <a href='mailto:chris@foodtron9000.com?subject=Hey%20Food-Tron 9000...'>Support</a>` : nothing}
+  <!-- TODO better mechanism for defaults -->
+  <!-- TODO webp/jpeg -->
+  ${user.photo.filename !== 'chrisandrewca'
+    ? html`<img src="/media/256/${user.photo.filename}.jpeg" alt="">`
+    : html`<img src="/assets/256/${user.photo.filename}.jpeg" alt="">`}
     </div>
 
     <div class="profile-user-settings">
@@ -592,7 +608,7 @@ const Profile = ({ content, handle, order }) => html`
     </div>
 
     <div class="profile-bio">
-      <p><span class="profile-real-name">Jane Doe</span> Lorem ipsum dolor sit, amet consectetur adipisicing elit 📷✈️🏕️</p>
+      <p><span class="profile-real-name">${handle}</span> ${user.description}</p>
     </div>
 
   </div>

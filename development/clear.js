@@ -17,6 +17,9 @@ const clearOrderSessions = async () =>
 const clearProducts = async () =>
   await mongoStore.clearAllInCollection('product');
 
+const clearStripeAccounts = async () =>
+  await mongoStore.clearAllInCollection('stripeAccount');
+
 const clearUsers = async () =>
   await mongoStore.clearAllInCollection('user');
 
@@ -40,6 +43,7 @@ const funcs = {
   order: clearOrder,
   orderSession: clearOrderSessions,
   product: clearProducts,
+  stripeAccount: clearStripeAccounts,
   user: clearUsers,
   wwwmedia: clearWwwMedia,
 };

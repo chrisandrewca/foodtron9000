@@ -18,7 +18,7 @@ const getLoginLink = async ({ handle }) => {
 
   await mongoStore.setLoginLink({ expiry, handle, key });
 
-  return `https://${process.env.RUNTIME_DOMAIN}/api/auth?key=${key}`;
+  return `https://${process.env.RUNTIME_DOMAIN}/api/auth/login?key=${key}`;
 };
 
 const setAuthSession = async (res, { handle }) => {
@@ -48,10 +48,10 @@ const validateAuthSession = async (req, res, next) => {
   const { handle } = await mongoStore.getAuthSession({ sessionId });
 
   if (!handle) {
-    return res.redirect('/login');
+    return res.status(401).end();
   }
 
-  res.scoped.user = await mongoStore.getUserByHandle({ handle });
+  req.scoped.user = await mongoStore.getUserByHandle({ handle });
 
   next();
 };
@@ -63,7 +63,7 @@ const validateLoginLink = async ({ key }) => {
   const { handle, key: serverKey, expiry } = await mongoStore.getLoginLink({ key });
 
   if (handle) {
-    await mongoStore.deleteLoginLink({ handle });
+    await mongoStore.deleteLoginLinks({ handle });
 
     if (expiry >= now && serverKey === key) {
 

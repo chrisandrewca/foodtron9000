@@ -57,12 +57,23 @@ const setOrderSession = async ({ id }, { products }) =>
       { $set: { id, products } },
       { upsert: true }));
 
-const setProduct = async ({ handle, id = uuid() }, { description, name, photos, price }) =>
+const setProduct = async ({
+  description,
+  handle,
+  name,
+  photos,
+  price,
+  id = uuid()
+}) =>
   await cmd(async db =>
     await db.collection('product').updateOne(
       { handle, id },
-      { $set: { description, id, name, photos, price } },
+      { $set: { description, handle, id, name, photos, price } },
       { upsert: true }));
+
+const deleteProductById = async ({ id }) =>
+  await cmd(async db =>
+    await db.collection('product').deleteOne({ id }));
 
 const getProductById = async ({ id }) =>
   await cmd(async db =>
@@ -77,11 +88,18 @@ const getStripeAccount = async ({ handle }) =>
   await cmd(async db =>
     await db.collection('stripeAccount').findOne({ handle }));
 
-const setUser = async ({ email, handle }, { }) =>
+const setStripeAccount = async ({ handle, ...stripeAccount }) =>
+  await cmd(async db =>
+    await db.collection('stripeAccount').updateOne(
+      { handle },
+      { $set: { handle, ...stripeAccount } },
+      { upsert: true }));
+
+const setUser = async ({ description, email, handle, photo }) =>
   await cmd(async db =>
     await db.collection('user').updateOne(
       { email, handle },
-      { $set: { email, handle } },
+      { $set: { description, email, handle, photo } },
       { upsert: true }));
 
 const getUserByHandle = async ({ handle }) =>
@@ -103,9 +121,11 @@ module.exports = {
   getOrderSession,
   setOrderSession,
   setProduct,
+  deleteProductById,
   getProductById,
   getProductsByHandle,
   getStripeAccount,
+  setStripeAccount,
   setUser,
   getUserByHandle,
   getUserExists

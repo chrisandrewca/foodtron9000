@@ -1,34 +1,5 @@
 const gotHttp = require('got');
 
-// TODO images...?
-const sendOrderPlacedEmail = async ({ order: { customer, products }, user }) => {
-  try {
-    await gotHttp.post(`https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`, {
-      headers: {
-        Authorization: `Basic ${Buffer.from(`api:${process.env.MAILGUN_PRIVATE}`).toString('base64')}`,
-      },
-      form: {
-        from: "Food-Tron 9000 <chris@foodtron9000.com>",
-        html: `
-          <p>Order placed by ${customer.name} <${customer.email}></p>
-          <ul>
-          ${products.map(({ name, note, quantity }) =>
-          `<li>
-            ${name} x${quantity} ${note ? `<b>${note}</b>` : ''}
-          </li>`).join('\n')}
-          </ul>
-          <p>Thanks for using the Food-Tron 9000, ${user.handle}!</p>`,
-        to: `${user.email}`,
-        subject: "Order placed",
-      }
-    });
-  } catch (mailgunError) {
-    // TODO logging
-    console.log(mailgunError);
-    console.log('mailgunError', mailgunError.response.body);
-  }
-};
-
 const sendCheckoutWithoutStripeAccountEmail = async ({ lineItems, user }) => {
   try {
     await gotHttp.post(`https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`, {
@@ -50,6 +21,60 @@ const sendCheckoutWithoutStripeAccountEmail = async ({ lineItems, user }) => {
           <p>Signup with stripe account direct link</p>`,
         to: `${user.email}`,
         subject: "Customer wants to place an order",
+      }
+    });
+  } catch (mailgunError) {
+    // TODO logging
+    console.log(mailgunError);
+    console.log('mailgunError', mailgunError.response.body);
+  }
+};
+
+const sendLoginEmail = async ({ email, handle, loginLink }) => {
+
+  try {
+    await gotHttp.post(`https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`, {
+      headers: {
+        Authorization: `Basic ${Buffer.from(`api:${process.env.MAILGUN_PRIVATE}`).toString('base64')}`,
+      },
+      form: {
+        from: "Food-Tron 9000 <chris@foodtron9000.com>",
+        html: `
+          <h1>Thanks for logging in ${handle}!</h1>
+          <p><a href="${loginLink}">Tap here to visit your dashboard.</a></p>
+          <p>Happy selling 🤗</p>`,
+        to: `${email}`,
+        subject: "Logged in",
+      }
+    });
+
+  } catch (mailgunError) {
+    // TODO logging
+    console.log(mailgunError);
+    console.log('mailgunError', mailgunError.response.body);
+  }
+};
+
+// TODO images...?
+const sendOrderPlacedEmail = async ({ order: { customer, products }, user }) => {
+  try {
+    await gotHttp.post(`https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`, {
+      headers: {
+        Authorization: `Basic ${Buffer.from(`api:${process.env.MAILGUN_PRIVATE}`).toString('base64')}`,
+      },
+      form: {
+        from: "Food-Tron 9000 <chris@foodtron9000.com>",
+        html: `
+          <p>Order placed by ${customer.name} <${customer.email}></p>
+          <ul>
+          ${products.map(({ name, note, quantity }) =>
+          `<li>
+            ${name} x${quantity} ${note ? `<b>${note}</b>` : ''}
+          </li>`).join('\n')}
+          </ul>
+          <p>Thanks for using the Food-Tron 9000, ${user.handle}!</p>`,
+        to: `${user.email}`,
+        subject: "Order placed",
       }
     });
   } catch (mailgunError) {
@@ -102,7 +127,8 @@ const sendStartEmail = async ({ email, handle }) => {
 };
 
 module.exports = {
-  sendOrderPlacedEmail,
   sendCheckoutWithoutStripeAccountEmail,
+  sendLoginEmail,
+  sendOrderPlacedEmail,
   sendStartEmail
 };

@@ -18,6 +18,115 @@ export const getFieldsFromError = ({ error, fields }) => {
   return { errorText, fields };
 };
 
+export const isAuthenticated = async () => {
+
+  const result = await fetch('/api/auth', {
+    headers: { Accept: 'application/json' },
+    method: 'GET'
+  });
+
+  return result.ok;
+}
+
+export const buy = async ({ handle }) => {
+
+  const result = await fetch('/api/buy', {
+    body: JSON.stringify({ handle }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'POST'
+  });
+
+  const { buy } = await result.json();
+  return buy;
+};
+
+export const login = async ({ email }) => {
+
+  const result = await fetch(`/api/auth/login?email=${email}`, {
+    headers: { Accept: 'application/json' },
+    method: 'GET'
+  });
+
+  const { auth = {} } = result.ok
+    ? {}
+    : await result.json();
+
+  return auth;
+}
+
+export const getOrder = async (sessionId) => {
+
+  const params = new URLSearchParams();
+  if (sessionId) params.set('sessionId', sessionId);
+
+  const result = await fetch(`/api/order?${params.toString()}`, {
+    headers: { Accept: 'application/json' },
+    method: 'GET'
+  });
+
+  const { order } = await result.json();
+  return order;
+};
+
+export const createProduct = async ({ fields, handle }) => {
+
+  const body = getFormFromFields(fields);
+  body.append('handle', handle);
+
+  const result = await fetch('/api/product', {
+    body,
+    headers: { Accept: 'application/json' },
+    method: 'POST'
+  });
+
+  const { product = {} } = result.ok
+    ? {}
+    : await result.json();
+
+  return product;
+};
+
+export const deleteProduct = async ({ id }) => {
+
+  const params = new URLSearchParams();
+  params.set('id', id);
+
+  await fetch(`/api/product?${params.toString()}`, {
+    headers: { Accept: 'application/json' },
+    method: 'DELETE'
+  });
+};
+
+export const updateProduct = async ({ fields, id }) => {
+
+  const body = getFormFromFields(fields);
+
+  body.append('id', id);
+
+  const result = await fetch('/api/product', {
+    body,
+    headers: { Accept: 'application/json' },
+    method: 'PATCH'
+  });
+
+  const { product = {} } = result.ok
+    ? {}
+    : await result.json();
+
+  return product;
+};
+
+export const getProductById = async (id) => {
+
+  const result = await fetch(`/api/product/${id}`);
+
+  const { product } = await result.json();
+  return product;
+}
+
 export const addProductToOrder = async ({ fields, product }) => {
 
   const body = {
@@ -41,43 +150,6 @@ export const addProductToOrder = async ({ fields, product }) => {
   return order;
 };
 
-export const buy = async ({ handle }) => {
-
-  const result = await fetch('/api/buy', {
-    body: JSON.stringify({ handle }),
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    },
-    method: 'POST'
-  });
-
-  const { buy } = await result.json();
-  return buy;
-};
-
-export const getOrder = async (sessionId) => {
-
-  const params = new URLSearchParams();
-  if (sessionId) params.set('sessionId', sessionId);
-
-  const result = await fetch(`/api/order?${params.toString()}`, {
-    headers: { Accept: 'application/json' },
-    method: 'GET'
-  });
-
-  const { order } = await result.json();
-  return order;
-};
-
-export const getProductById = async (id) => {
-
-  const result = await fetch(`/api/product/${id}`);
-
-  const { product } = await result.json();
-  return product;
-}
-
 export const getProfile = async (handle) => {
 
   const result = await fetch(`/api/profile/${handle}`, {
@@ -89,16 +161,22 @@ export const getProfile = async (handle) => {
   return profile;
 };
 
-export const setProduct = async (fields) => {
+export const setProfile = async ({ fields, handle }) => {
 
-  const result = await fetch('/api/product', {
-    body: getFormFromFields(fields),
+  const body = getFormFromFields(fields);
+  body.append('handle', handle);
+
+  const result = await fetch(`/api/profile`, {
+    body,
     headers: { Accept: 'application/json' },
-    method: 'POST'
+    method: 'PATCH'
   });
 
-  const { product } = await result.json();
-  return product;
+  const { profile = {} } = result.ok
+    ? {}
+    : await result.json();
+
+  return profile;
 };
 
 export const getReceipt = async ({ handle, sessionId }) => {
@@ -120,7 +198,7 @@ export const start = async (fields) => {
 
   const result = await fetch('/api/start', {
     body: getFormFromFields(fields),
-    headers: { 'accept': 'json' },
+    headers: { Accept: 'application/json' },
     method: 'POST'
   });
 
@@ -129,6 +207,17 @@ export const start = async (fields) => {
     : await result.json();
 
   return start;
+};
+
+export const getStripeAuthorization = async () => {
+
+  const result = await fetch('/api/stripe/authorize', {
+    headers: { Accept: 'application/json' },
+    method: 'GET'
+  });
+
+  const { authorize } = await result.json();
+  return authorize;
 };
 
 const getFormFromFields = (fields) => {

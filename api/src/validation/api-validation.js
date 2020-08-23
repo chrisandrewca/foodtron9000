@@ -117,7 +117,10 @@ const productGetById = async ({ params }) => {
   return { params };
 };
 
-const productPost = async ({ body, files }) => {
+// TODO splitup validation for patches which require photos
+  // since UI will send over photo field with '[object object]' string
+  // from - allowUnknown for multer files
+const productPatch = async ({ body, files }) => {
 
   const schema = joi.object({
     body: joi.object({
@@ -127,11 +130,18 @@ const productPost = async ({ body, files }) => {
           'any.required': 'Your description is required.',
           'string.empty': 'Your description is required.',
         }),
+      id: joi.string().uuid({ version: 'uuidv4' }).required()
+        .label('id')
+        .messages({
+          'any.required': 'Your id is required.',
+          'string.empty': 'Your id is required.',
+          'string.uuid.base': 'Your id is required.'
+        }),
       name: joi.string().required()
         .label('name')
         .messages({
-          'any.required': 'Your name is required.',
-          'string.empty': 'Your name is required.',
+          'any.required': 'Your menu item name is required.',
+          'string.empty': 'Your menu item name is required.',
         }),
       price: joi.number().precision(2).greater(0).required()
         .label('price')
@@ -146,10 +156,60 @@ const productPost = async ({ body, files }) => {
       filename: joi.string().required(),
       originalname: joi.string().required(),
       path: joi.string().required()
-    })).required()
+    })) // TODO possibly support .min(1), so we dont get an empty files array?
+  });
+
+  try {
+    await schema.validateAsync({ body, files }, { abortEarly: false, allowUnknown: true });
+  } catch (validationError) {
+    return { body, files, validationError };
+  }
+
+  return { body, files };
+};
+
+const productPost = async ({ body, files }) => {
+
+  const schema = joi.object({
+    body: joi.object({
+      description: joi.string().required()
+        .label('description')
+        .messages({
+          'any.required': 'Your description is required.',
+          'string.empty': 'Your description is required.',
+        }),
+      handle: joi.string().pattern(/^[A-Za-z0-9-_~]+$/).required()
+        .label('handle')
+        .messages({
+          'any.required': 'Your @handle is required.',
+          'string.empty': 'Your @handle is required.',
+          'string.pattern.base': 'Your @handle is required.'
+        }),
+      name: joi.string().required()
+        .label('name')
+        .messages({
+          'any.required': 'Your menu item name is required.',
+          'string.empty': 'Your menu item name is required.',
+        }),
+      price: joi.number().precision(2).greater(0).required()
+        .label('price')
+        .messages({
+          'number.precision': 'Your price must be like "4.99".',
+          'number.greater': 'Your price must be greater than 0.',
+          'any.required': 'Your price must be like "4.99".',
+          'number.base': 'Your price must be like "4.99".'
+        })
+    }).required(),
+    files: joi.array().items(joi.object({
+      filename: joi.string().required(),
+      originalname: joi.string().required(),
+      path: joi.string().required()
+    })).min(1)
+      .required()
       .label('photos')
       .messages({
-        'any.required': 'Your menu item photos are required.'
+        'any.required': 'Your menu item photos are required.',
+        'array.min': 'Your menu item photos are required.'
       })
   });
 
@@ -183,6 +243,43 @@ const profileGet = async ({ params }) => {
   }
 
   return { params };
+};
+
+// TODO splitup validation for patches which require photos
+  // since UI will send over photo field with '[object object]' string
+  // from - allowUnknown for multer files
+const profilePatch = async ({ body, files }) => {
+
+  const schema = joi.object({
+    body: joi.object({
+      description: joi.string().required()
+        .label('description')
+        .messages({
+          'any.required': 'Your description is required.',
+          'string.empty': 'Your description is required.',
+        }),
+      handle: joi.string().pattern(/^[A-Za-z0-9-_~]+$/).required()
+        .label('handle')
+        .messages({
+          'any.required': 'Your @handle is required.',
+          'string.empty': 'Your @handle is required.',
+          'string.pattern.base': 'Your @handle is required.'
+        })
+    }).required(),
+    files: joi.array().items(joi.object({
+      filename: joi.string().required(),
+      originalname: joi.string().required(),
+      path: joi.string().required()
+    })) // TODO possibly support .min(1), so we dont get an empty files array?
+  });
+
+  try {
+    await schema.validateAsync({ body, files }, { abortEarly: false, allowUnknown: true });
+  } catch (validationError) {
+    return { body, files, validationError };
+  }
+
+  return { body, files };
 };
 
 const startPost = async ({ body, file }) => {
@@ -244,7 +341,9 @@ module.exports = {
   orderPost,
   orderSession,
   productGetById,
+  productPatch,
   productPost,
   profileGet,
+  profilePatch,
   startPost
 };

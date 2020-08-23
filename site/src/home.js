@@ -287,7 +287,6 @@ const Home = ({ dpr, fields }) => html`
           @change=${handleChange}
           name="price"
           inputmode='decimal'
-          pattern='\$?\d{1,6}.\d\d'
           placeholder="💲 Price"
           type="text"
         />
