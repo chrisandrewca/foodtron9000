@@ -186,7 +186,6 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
 
   h2 {
     font-weight: 400;
-    text-decoration: underline;
   }
 
   a, label, input, textarea {
@@ -194,7 +193,7 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
   }
 
   section {
-    margin: 0 0 3vh 0;
+    margin: 0 0 4vh 0;
   }
 
   form {
@@ -229,16 +228,15 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
   <h1>Welcome, ${handle}!</h1>
   <p>
     Thanks for trying out the Food-Tron 9000. We're actively adding new features.
-    If you have any feedback or questions
+    If you have any questions or feedback
     <a href='mailto:chris@foodtron9000.com?subject=Hey%20Food-Tron 9000...'>
-      do not hesitate to reach out
-    </a>!
+      please reach out!</a>
   </p>
 </header>
 
 <main>
 <section>
-<h2>Manage profile</h2>
+<h2>Manage Profile</h2>
 <form>
   <label>
     Photo
@@ -269,7 +267,7 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
 </section>
 
 <section>
-<h2>Manage menu</h2>
+<h2>Manage Menu</h2>
 <ul>
   ${profile.products.map(({ id, name }) => html`
     <li>
@@ -282,11 +280,11 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
 </section>
 
 <section>
-<h2>Collect payments</h2>
+<h2>Collect Payments</h2>
 ${stripeAuthorization.url
     ? html`
   <p>
-    <a .href=${stripeAuthorization.url}>Create a Stripe account to get paid.</a>
+    <a .href=${stripeAuthorization.url} target="_blank">Create a Stripe account to get paid.</a>
     Payments will be deposited into your bank account.
   </p>
   <p>
@@ -294,7 +292,7 @@ ${stripeAuthorization.url
   </p>`
     : html`
   <p>
-    Congratulations! Check your Stripe account to see your collected payments.
+    Welcome aboard! 🚀 Check your <a href="https://dashboard.stripe.com/" target="_blank">Stripe</a> account to see your collected payments.
   </p>`}
 </section>
 </main>

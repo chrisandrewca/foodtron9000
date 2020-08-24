@@ -9,16 +9,26 @@ const sendCheckoutWithoutStripeAccountEmail = async ({ lineItems, user }) => {
       form: {
         from: "Food-Tron 9000 <chris@foodtron9000.com>",
         html: `
-          <p>An cws has been placed by TODO</p>
+          <p>You've got a hungry customer! 🍽</p>
           <ul>
           ${lineItems.map(({ price_data: { product_data: { images, name, metadata: { note } } }, quantity }) =>
           `<li>
-            <img height="72px" src="https://${process.env.RUNTIME_DOMAIN}/media/72/${images[0].split('/').pop()}" width="72px" />
+            <img height="64px" src="https://${process.env.RUNTIME_DOMAIN}/media/512/${images[0].split('/').pop()}" width="64px" />
             ${name} x${quantity} ${note ? `<b>${note}</b>` : ''}
           </li>`)}
           </ul>
-          <p>TODO incentive text</p>
-          <p>Signup with stripe account direct link</p>`,
+          <p>
+            But before you fire up the grill 🔥, you'll need to signup with our partner Stripe to begin accepting orders and collecting payments.
+          </p>
+          <p>
+            Visit your profile and swipe down to the <a href='https://${process.env.RUNTIME_DOMAIN}/manage-profile?handle=${user.handle}'>Collect Payments</a> section.
+          <p>
+          <p>
+            Hope to have you on board! 🚀
+          </p>
+          <p>
+            Chris from the Food-Tron 9000
+          </p>`,
         to: `${user.email}`,
         subject: "Customer wants to place an order",
       }
@@ -41,8 +51,8 @@ const sendLoginEmail = async ({ email, handle, loginLink }) => {
         from: "Food-Tron 9000 <chris@foodtron9000.com>",
         html: `
           <h1>Thanks for logging in ${handle}!</h1>
-          <p><a href="${loginLink}">Tap here to visit your dashboard.</a></p>
-          <p>Happy selling 🤗</p>`,
+          <p><a href="${loginLink}">Tap here to visit your profile.</a></p>
+          <p>Happy selling 👍</p>`,
         to: `${email}`,
         subject: "Logged in",
       }
@@ -84,6 +94,9 @@ const sendOrderPlacedEmail = async ({ order: { customer, products }, user }) => 
   }
 };
 
+/*
+ * Assumes user been assigned an auth session after signing up.
+ */
 const sendStartEmail = async ({ email, handle }) => {
 
   try {
@@ -98,7 +111,7 @@ const sendStartEmail = async ({ email, handle }) => {
           <p>Here at the Food-Tron 9000 we believe...</p>
           <p>
             Just kidding!
-            <a href='https://${process.env.RUNTIME_DOMAIN}'>
+            <a href='https://${process.env.RUNTIME_DOMAIN}/manage-profile?handle=${handle}'>
               Tap here to visit your profile.
             </a>
           </p>
@@ -110,8 +123,11 @@ const sendStartEmail = async ({ email, handle }) => {
           </p>
           <p>
             Ready to get paid?
-            <a href='https://${process.env.RUNTIME_DOMAIN}/dashboard'>
-              Tap here to connect your bank account.
+          </p>
+          <p>
+            Get payments deposited into your bank account through our partner Stripe.
+            <a href='https://${process.env.RUNTIME_DOMAIN}/manage-profile?handle=${handle}'>
+              Visit your profile to get started.
             </a>
           </p>`,
         to: `${email}`,
