@@ -9,17 +9,19 @@
 }
 
 body, html {
-  background: #fff;
+  background: #fafafa;
   font-family: system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 1vw;
   font-weight: 400;
   height: 100%;
   margin: 0;
+  overflow-y: scroll;
   padding: 0;
   text-rendering: optimizeLegibility;
   width: 100%;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {

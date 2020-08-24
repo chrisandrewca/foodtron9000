@@ -27,6 +27,20 @@ export const loadEffect = async () => {
   // warning: scheme set in app.js https://<domain>/handle
   const profile = await Api.getProfile(handle);
 
+  if (profile.products.length < 3) {
+    const placeholderCount = 3 - profile.products.length;
+    profile.placeholderProducts = [];
+
+    for (let i = 0; i < placeholderCount; i++) {
+      profile.placeholderProducts.push({
+        href: authenticated ? `/manage-product?handle=${handle}` : '#',
+        photos: [{
+          filename: 'PlaceholderCustomization'
+        }]
+      });
+    }
+  }
+
   if (profile.error
     && profile.error.code === 'handle') {
     setLocation('/');
@@ -86,6 +100,7 @@ const handleClearOrder = async (e) => {
 const handleBuy = async ({ e, handle }) => {
 
   e.preventDefault();
+  e.target.disabled = true;
 
   const buy = await Api.buy({ handle });
 
@@ -104,11 +119,13 @@ const handleBuy = async ({ e, handle }) => {
 
   script.src = import.meta.env.SNOWPACK_PUBLIC_STRIPE_API;
   document.head.appendChild(script);
+
+  e.target.disabled = true;
 };
 
 const ProfileLoader = () => html`<div class="loader"></div>`;
 
-const ProfileGallery = ({ products }) => html`
+const ProfileGallery = ({ placeholderProducts, products }) => html`
 
 <div class="gallery">
   ${products.map(({ id, photos: [photo] }) => html`
@@ -139,6 +156,35 @@ const ProfileGallery = ({ products }) => html`
           />
         </picture>`, href: `/profile-product?id=${id}`
   })}
+    </div>`)}
+  ${placeholderProducts && placeholderProducts.map(({ href, photos: [photo] }) => html`
+    <div class="gallery-item" tabindex="0">
+      ${Anchor(
+    {
+      content: html`
+        <!-- TODO various media photos size, webp, jpeg -->
+        <picture>
+          <source
+            media="(min-width: 0px)"
+            sizes="100%"
+            .srcset=${`/assets/1080/${photo.filename}.webp`}
+            type="image/webp" />
+
+          <source
+            media="(min-width: 0px)"
+            sizes="100%"
+            .srcset=${`/assets/1080/${photo.filename}.png`}
+            type="image/png" />
+
+          <!-- product name in alt text -->
+          <img
+            alt=""
+            class="gallery-image"'
+            sizes="100%"
+            .srcset=${`/assets/1080/${photo.filename}.png`}
+          />
+        </picture>`, href: `${href}`
+    })}
     </div>`)}
 </div>`;
 
@@ -218,10 +264,6 @@ const Profile = ({ authenticated, content, handle, order, profile: { user } }) =
   .profile-image {
     float: left;
     width: calc(33.333% - 1rem);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 3rem;
   }
 
   .profile-image img {
@@ -305,6 +347,7 @@ const Profile = ({ authenticated, content, handle, order, profile: { user } }) =
     font-weight: 400;
     line-height: 1.5;
     margin-top: 2.3rem;
+    overflow-wrap: break-word;
   }
 
   .profile-real-name,
@@ -387,13 +430,23 @@ const Profile = ({ authenticated, content, handle, order, profile: { user } }) =
     animation: loader 500ms linear infinite;
   }
 
+  .clear-button {
+    border: 0.1rem solid #dbdbdb;
+    border-radius: 3px;
+    box-shadow: none;
+    background: transparent;
+    color: #262626;
+    font-weight: 400;
+    height: 2.4rem;
+  }
+
   /* Media Query */
 
   @media screen and (max-width: 40rem) {
     .profile {
       display: flex;
       flex-wrap: wrap;
-      padding: 1rem 0 4rem 0;
+      padding: 0 0 2rem 0;
     }
 
     .profile::after {
@@ -408,8 +461,22 @@ const Profile = ({ authenticated, content, handle, order, profile: { user } }) =
       width: auto;
     }
 
+    .profile-admin-links {
+      margin: 0 0 1rem 0;
+    }
+
+    .profile-admin-links a {
+      font-size: 1.2rem;
+    }
+
+    .profile-admin-links a:not(:first-of-type) {
+      margin: 0 0 0 1rem;
+    }
+
     .profile-image img {
       width: 7.7rem;
+      height: 7.7rem;
+      object-fit: cover;
     }
 
     .profile-user-settings {
@@ -453,13 +520,17 @@ const Profile = ({ authenticated, content, handle, order, profile: { user } }) =
       text-align: center;
     }
 
-    .item-count {
+    .item-count-container {
       align-items: center;
       display: inline-block;
-      border-bottom: 0.1rem solid #dbdbdb;
       justify-content: center;
       text-align: center;
       width: auto;
+    }
+
+    .item-count {
+      border-bottom: 0.1rem solid #dbdbdb;
+      margin: 0 0 0.6rem 0;
     }
 
     .item-count > p {
@@ -478,7 +549,7 @@ const Profile = ({ authenticated, content, handle, order, profile: { user } }) =
     }
 
     .place-order {
-      border: 0.1rem solid #dbdbdb;
+      border: 0.1rem solid #999;
       border-radius: 3px;
       box-shadow: none;
       background: white;
@@ -591,9 +662,12 @@ const Profile = ({ authenticated, content, handle, order, profile: { user } }) =
   <div class="profile">
 
     <div class="profile-image">
+      <div class="profile-admin-links">
       ${authenticated ? html`
         <a href=${`/manage-profile?handle=${handle}`}>Edit profile</a>
         <a href='mailto:chris@foodtron9000.com?subject=Hey%20Food-Tron 9000...'>Support</a>` : nothing}
+      </div>
+
   <!-- TODO better mechanism for defaults -->
   <!-- TODO webp/jpeg -->
   ${user.photo.filename !== 'chrisandrewca'
@@ -608,9 +682,12 @@ const Profile = ({ authenticated, content, handle, order, profile: { user } }) =
     </div>
 
     <div class="profile-stats">
-      <div class="item-count">
-        <p><span>${order.products.length}</span>Items</p>
+      <div class="item-count-container">
+        <div class="item-count">
+          <p><span>${order.products.length}</span>Items</p>
+        </div>
         <button
+          class="signup-button clear-button"
           @click=${handleClearOrder}
         >
           Clear order

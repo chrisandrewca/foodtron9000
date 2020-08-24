@@ -170,6 +170,61 @@ const handleProfileSubmit = async ({ e, fields, handle }) => {
 
 const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
 
+<style type="text/css">
+  .container {
+    font-size: 4vw;
+    margin: 0 auto;
+    max-width: 90vw;
+    overflow-wrap: break-word;
+    padding: 1vh 0 0 0;
+  }
+
+  h1 {
+    font-size: 8vw;
+    text-align: center;
+  }
+
+  h2 {
+    font-weight: 400;
+    text-decoration: underline;
+  }
+
+  a, label, input, textarea {
+    font-size: 16px;
+  }
+
+  section {
+    margin: 0 0 3vh 0;
+  }
+
+  form {
+    padding: 2vh 0 0 0;
+  }
+
+  input, label, textarea {
+    display: block;
+    margin: 0 0 3vh 0;
+    width: 100%;
+  }
+
+  textarea {
+    border: 0.1rem solid #999;
+    resize: vertical;
+  }
+
+  .insta-button {
+    border: 0.1rem solid #999;
+    border-radius: 3px;
+    box-shadow: none;
+    background: white;
+    color: #262626;
+    font-size: 2vh;
+    font-weight: 400;
+    padding: 1.2vw 4vw;
+    text-transform: none;
+  }
+</style>
+<div class="container">
 <header>
   <h1>Welcome, ${handle}!</h1>
   <p>
@@ -182,31 +237,38 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
 </header>
 
 <main>
-
+<section>
 <h2>Manage profile</h2>
 <form>
-  <input
-    @change=${handleProfilePhoto}
-    name="photo",
-    type="file"
-  />
+  <label>
+    Photo
+    <input
+      @change=${handleProfilePhoto}
+      name="photo",
+      type="file"
+    />
+  </label>
 
   <label>
     Description
     <textarea
       @change=${handleProfileChange}
-      name="description",
+      name="description"
+      rows="4"
       .value=${profile.fields.description.value}
     ></textarea>
   </label>
 
   <input
+    class="signup-button insta-button"
     @click=${(e) => handleProfileSubmit({ e, fields: profile.fields, handle })}
     type="submit"
     value="Save"
   />
 </form>
+</section>
 
+<section>
 <h2>Manage menu</h2>
 <ul>
   ${profile.products.map(({ id, name }) => html`
@@ -217,19 +279,23 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
     </li>`)}
 </ul>
 <a .href=${`/manage-product?handle=${handle}`}>Add menu item</a>
+</section>
 
+<section>
 <h2>Collect payments</h2>
-<p>Payment structure text...</p>
 ${stripeAuthorization.url
     ? html`
   <p>
     <a .href=${stripeAuthorization.url}>Create a Stripe account to get paid.</a>
-    Payments will be depositable into bank account. You'll need things like: x, y, z.
+    Payments will be deposited into your bank account.
+  </p>
+  <p>
+    The Food-Tron 9000 collects 10% of each order, while Stripe collects 2.9%. <!--Tap here to calculate your profits.-->
   </p>`
     : html`
   <p>
-    Congratulations! Payments will be deposited directly into your Stripe account. 
-    Click here to deposit payments into your bank account.
+    Congratulations! Check your Stripe account to see your collected payments.
   </p>`}
-
-</main>`;
+</section>
+</main>
+</div>`;

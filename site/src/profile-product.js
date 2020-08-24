@@ -12,7 +12,10 @@ export const loadState = async () => {
     fields: {
       quantity: { value: 1 }
     },
-    loading: true
+    loading: true,
+    product: {
+      photos: []
+    }
   }));
 
   await update(ProfileProduct(state));
@@ -90,31 +93,136 @@ const handleSubmit = async ({ e, fields, product }) => {
   }
 };
 
-const ProfileProduct = ({ fields, loading, product }) =>
+const ProfileProduct = ({
+  fields,
+  loading,
+  product
+}) => loading ? nothing : html`
 
-  loading ? nothing : html`
+<style type="text/css">
+  .container {
+    font-size: 4vw;
+    margin: 0 auto;
+    max-width: 90vw;
+    overflow-wrap: break-word;
+    padding: 1vh 0 0 0;
+  }
 
-<h1>${product.name}</h1>
+  h1 {
+    font-size: 8vw;
+    text-align: center;
+  }
+
+  h2 {
+    font-weight: 400;
+    text-decoration: underline;
+  }
+
+  a, label, input, textarea {
+    font-size: 16px;
+  }
+
+  main {
+    padding: 0 0 1vh 0;
+  }
+
+  section {
+    margin: 0 0 3vh 0;
+  }
+
+  form {
+    padding: 2vh 0 0 0;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+  }
+
+  input, label, textarea {
+    display: block;
+    margin: 0 0 3vh 0;
+    width: 100%;
+  }
+
+  textarea, input {
+    border: 0.1rem solid #999;
+    padding: 2vw;
+    resize: vertical;
+  }
+
+  .insta-button {
+    border: 0.1rem solid #999;
+    border-radius: 3px;
+    box-shadow: none;
+    background: white;
+    color: #262626;
+    font-size: 2vh;
+    font-weight: 400;
+    padding: 1.2vw 4vw;
+    text-transform: none;
+  }
+</style>
+
+<div class="container">
+<header>
+  <h1>${product.name}</h1>
+</header>
+
+<main>
+
+<picture>
+  <source
+    media="(min-width: 0px)"
+    sizes="100%"
+    .srcset=${`/media/1080/${product.photos[0].filename}.webp`}
+    type="image/webp" />
+
+  <source
+    media="(min-width: 0px)"
+    sizes="100%"
+    .srcset=${`/media/1080/${product.photos[0].filename}.jpeg`}
+    type="image/jpeg" />
+
+  <img
+    .alt=${name}
+    class="gallery-image"'
+    sizes="100%"
+    .srcset=${`/media/1080/${product.photos[0].filename}.jpeg`}
+  />
+</picture>
+
 <p>${product.description}</p>
-<p>${product.price}</p>
+<p>$${product.price}</p>
 
-<input
-  @change=${handleChange}
-  inputmode='numeric'
-  name="quantity"
-  pattern='\d'
-  type="number"
-  .value=${fields.quantity.value}
-/>
+<label>
+  Quantity
+  <input
+    @change=${handleChange}
+    inputmode='numeric'
+    name="quantity"
+    pattern='\d'
+    type="number"
+    .value=${fields.quantity.value}
+  />
+</label>
 
-<textarea
-  @change=${handleChange}
-  name="note"
-></textarea>
+<label>
+  Note
+  <textarea
+    @change=${handleChange}
+    name="note"
+  ></textarea>
+</label>
 
 <input
   class="signup-button"
   @click=${(e) => handleSubmit({ e, fields, product })}
   type="submit"
   value="Add to order"
-/>`;
+/>
+</main>
+</div>`;
