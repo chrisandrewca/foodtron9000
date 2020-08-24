@@ -2,30 +2,38 @@ const apiValidation = require('../validation/api-validation');
 const mongoStore = require('../storage/mdb');
 const router = require('express').Router();
 
-router.get('/', async (req, res) => {
+router.delete('/', async (req, res) => {
 
-  const { orderSession } = req.scoped;
+  let { orderSession } = req.scoped;
+  orderSession.products = [];
 
-  if (req.query.sessionId) {
+  let validationError;
+  ({ orderSession, validationError } =
+    await apiValidation.orderSession({ orderSession }));
 
-    // TODO api validation on this mutation
-    orderSession.products = [];
-
-    await mongoStore.setOrderSession(orderSession, orderSession);
-
-    req.scoped.orderSession = orderSession;
+  if (validationError) {
+    // TODO SRE error
   }
+
+  await mongoStore.setOrderSession(orderSession);
+
+  req.scoped.orderSession = orderSession;
 
   return res.json({ order: orderSession });
 });
 
+router.get('/', async (req, res) => {
+
+  return res.json({ order: req.scoped.orderSession });
+});
+
 router.post('/', async (req, res) => {
 
-  const { body, validationError } = await apiValidation.orderPost(req);
+  let { body, validationError} = await apiValidation.orderPost(req);
 
   if (validationError) {
 
-    const fields = apiValidation.fieldsFromValidationError(validationError);
+    const fields = apiValidation.fieldsFromValidationError(orderPost.validationError);
 
     return res
       .status(500)
@@ -39,13 +47,18 @@ router.post('/', async (req, res) => {
       });
   }
 
-  const { orderSession } = req.scoped;
-
+  let { orderSession } = req.scoped;
   orderSession.products.push(body);
 
-  await apiValidation.orderSession({ orderSession });
+  ({ orderSession, validationError } = await apiValidation.orderSession({ orderSession }));
 
-  await mongoStore.setOrderSession(orderSession, orderSession);
+  if (validationError) {
+    // SRE error
+  }
+
+  await mongoStore.setOrderSession(orderSession);
+
+  req.scoped.orderSession = orderSession;
 
   return res.status(200).end();
 });

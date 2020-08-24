@@ -48,9 +48,7 @@ const getOrderSession = async ({ id }) =>
   await cmd(async db =>
     await db.collection('orderSession').findOne({ id }));
 
-// TODO is it worth it to imply that the key id is required? is it implied?
-// possibly just accept a single destructure
-const setOrderSession = async ({ id }, { products }) =>
+const setOrderSession = async ({ id, products }) =>
   await cmd(async db =>
     await db.collection('orderSession').updateOne(
       { id },

@@ -77,8 +77,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .headers > h1,
 .headers > h2 {
-  background: black;
-  color: white;
+  background: white;
+  color: black;
   display: inline-block;
   font-size: 4.5vw;
   margin-block-start: 0.7vh;

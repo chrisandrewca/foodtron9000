@@ -1,6 +1,7 @@
 import * as Api from './utils/api-client';
-import { getSearchParams, setLocation } from './utils/location';
+import { copyFields, trimFields } from './utils/form';
 import { html } from 'lit-html';
+import { getSearchParams, setLocation } from './utils/location';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
@@ -27,6 +28,7 @@ export const loadState = async () => {
 
 export const loadEffect = async () => {
 
+  // TODO better error handling
   const handle = getSearchParams().get('handle');
   const profile = await Api.getProfile(handle);
   const stripeAuthorization = await Api.getStripeAuthorization();
@@ -126,6 +128,10 @@ const handleProfilePhoto = async (e) => {
 const handleProfileSubmit = async ({ e, fields, handle }) => {
 
   e.preventDefault();
+  e.target.disabled = false;
+
+  fields = copyFields(fields);
+  trimFields(fields);
 
   const { error } = await Api.setProfile({ fields, handle });
 
@@ -133,7 +139,10 @@ const handleProfileSubmit = async ({ e, fields, handle }) => {
 
     const state = setState(state => {
 
-      const { errorText, fields } = Api.getFieldsFromError({ error, fields: state.profile.fields });
+      const { errorText, fields } = Api.getFieldsFromError({
+        error,
+        fields: copyFields(state.profile.fields)
+      });
 
       return {
         ...state,
@@ -145,10 +154,16 @@ const handleProfileSubmit = async ({ e, fields, handle }) => {
       };
     });
 
+    e.target.disabled = false;
+
     await update(ManageProfile(state));
+
     setTimeout(() => alert(state.profile.errorText), 1);
 
   } else {
+
+    e.target.disabled = false;
+
     setLocation(`/${handle}`);
   }
 };
@@ -161,8 +176,8 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
     Thanks for trying out the Food-Tron 9000. We're actively adding new features.
     If you have any feedback or questions
     <a href='mailto:chris@foodtron9000.com?subject=Hey%20Food-Tron 9000...'>
-      don't hesitate to reach out
-    </a>.
+      do not hesitate to reach out
+    </a>!
   </p>
 </header>
 
@@ -175,15 +190,16 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
     name="photo",
     type="file"
   />
+
   <label>
     Description
     <textarea
       @change=${handleProfileChange}
-      class=""
       name="description",
       .value=${profile.fields.description.value}
     ></textarea>
   </label>
+
   <input
     @click=${(e) => handleProfileSubmit({ e, fields: profile.fields, handle })}
     type="submit"
@@ -194,12 +210,16 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
 <h2>Manage menu</h2>
 <ul>
   ${profile.products.map(({ id, name }) => html`
-    <li><a .href=${`/manage-product?handle=${handle}&id=${id}`}>${name}</li>`)}
+    <li>
+      <a .href=${`/manage-product?handle=${handle}&id=${id}`}>
+        ${name}
+      </a>
+    </li>`)}
 </ul>
 <a .href=${`/manage-product?handle=${handle}`}>Add menu item</a>
 
 <h2>Collect payments</h2>
-<p>Payment structure</p>
+<p>Payment structure text...</p>
 ${stripeAuthorization.url
     ? html`
   <p>

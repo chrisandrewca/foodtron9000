@@ -1,6 +1,6 @@
 import * as Api from './utils/api-client';
-import { getSearchParams, setLocation } from './utils/location';
-import { html, nothing } from 'lit-html';
+import { copyFields, trimFields } from './utils/form';
+import { html } from 'lit-html';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
@@ -36,15 +36,23 @@ const handleChange = async (e) => {
 const handleSubmit = async ({ e, fields }) => {
 
   e.preventDefault();
+  e.target.disabled = true;
+
+  fields = copyFields(fields);
+  trimFields(fields);
+
+  const { email } = fields;
 
   // TODO way better error handling for like when server straight up crashes
-  const { error } = await Api.login({ email: fields.email.value });
+  const { error } = await Api.login({ email: email.value });
 
   if (error) {
     alert(error.params.email);
   } else {
     alert('A link to login has been sent to your email. See ya soon! 😀');
   }
+
+  e.target.disabled = false;
 };
 
 const Login = ({ fields }) => html`
@@ -59,6 +67,7 @@ const Login = ({ fields }) => html`
       type="email"
     />
   </label>
+
   <input
     @click=${(e) => handleSubmit({ e, fields })}
     type="submit"

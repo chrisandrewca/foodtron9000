@@ -1,18 +1,14 @@
-// warning: someone needs to be responsible for the copy; I think functions should produce
-// new state; so this is where we'll do that
 export const getFieldsFromError = ({ error, fields }) => {
 
-  fields = { ...fields };
   let errorText = '';
-
   for (const key in error.fields) {
 
-    fields[key] = {
-      ...fields[key],
-      error: error.fields[key]
-    };
+    const message = error.fields[key];
 
-    errorText += error.fields[key] + '\n';
+    if (fields[key] !== undefined)
+      fields[key].error = message;
+
+    errorText += message + '\n';
   }
 
   return { errorText, fields };
@@ -57,12 +53,20 @@ export const login = async ({ email }) => {
   return auth;
 }
 
-export const getOrder = async (sessionId) => {
+export const deleteOrder = async () => {
 
-  const params = new URLSearchParams();
-  if (sessionId) params.set('sessionId', sessionId);
+  const result = await fetch('/api/order', {
+    headers: { Accept: 'application/json' },
+    method: 'DELETE'
+  });
 
-  const result = await fetch(`/api/order?${params.toString()}`, {
+  const { order } = await result.json();
+  return order;
+};
+
+export const getOrder = async () => {
+
+  const result = await fetch('/api/order', {
     headers: { Accept: 'application/json' },
     method: 'GET'
   });
@@ -179,11 +183,11 @@ export const setProfile = async ({ fields, handle }) => {
   return profile;
 };
 
-export const getReceipt = async ({ handle, sessionId }) => {
+export const getReceipt = async ({ handle, stripeSessionId }) => {
 
   const params = new URLSearchParams();
   params.set('handle', handle);
-  params.set('sessionId', sessionId);
+  params.set('stripeSessionId', stripeSessionId);
 
   const result = await fetch(`/api/stripe/receipt?${params.toString()}`, {
     header: { Accept: 'application/json' },

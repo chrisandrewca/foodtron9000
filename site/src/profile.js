@@ -49,14 +49,13 @@ export const loadEffect = async () => {
 
   } else {
 
-    // TODO rename to stripe session id
-    const sessionId = params.get('session_id');
+    const stripeSessionId = params.get('session_id');
 
-    const receipt = await Api.getReceipt({ handle, sessionId });
+    const receipt = await Api.getReceipt({ handle, stripeSessionId });
 
     // TODO plenty of duplication
     // TODO error handling
-    const order = await Api.getOrder(sessionId);
+    const order = await Api.deleteOrder();
 
     state = setState(state => ({
       ...state,
@@ -67,6 +66,19 @@ export const loadEffect = async () => {
       profile
     }));
   }
+
+  await update(Profile(state));
+};
+
+const handleClearOrder = async (e) => {
+
+  e.target.disabled = true;
+
+  const order = await Api.deleteOrder();
+
+  const state = setState(state => ({ ...state, order }));
+
+  e.target.disabled = false;
 
   await update(Profile(state));
 };
@@ -598,6 +610,11 @@ const Profile = ({ authenticated, content, handle, order, profile: { user } }) =
     <div class="profile-stats">
       <div class="item-count">
         <p><span>${order.products.length}</span>Items</p>
+        <button
+          @click=${handleClearOrder}
+        >
+          Clear order
+        </button>
       </div>
       <form>
         <input

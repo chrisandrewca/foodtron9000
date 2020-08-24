@@ -20,7 +20,7 @@ const orderSession = async (req, res, next) => {
       // TODO devops/SRE - notify team if there's an error here
     }
 
-    await mongoStore.setOrderSession(orderSession, orderSession);
+    await mongoStore.setOrderSession(orderSession);
 
     res.setHeader('Set-Cookie', cookie.serialize('orderSessionId', orderSession.id, {
       domain: process.env.RUNTIME_DOMAIN,

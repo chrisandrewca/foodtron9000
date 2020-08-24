@@ -1,6 +1,7 @@
 import * as Api from './utils/api-client';
-import { getSearchParams, setLocation } from './utils/location';
+import { copyFields, trimFields } from './utils/form';
 import { html, nothing } from 'lit-html';
+import { getSearchParams, setLocation } from './utils/location';
 import { setState } from './utils/state';
 import { update } from './utils/render';
 
@@ -30,32 +31,28 @@ export const loadEffect = async () => {
 
   if (params.has('id')) {
 
+    // TODO better error handling
     const product = await Api.getProductById(params.get('id'));
 
-    const state = await setState(state => ({
-      ...state,
-      fields: {
-        ...state.fields,
-        description: {
-          ...state.fields.description,
-          value: product.description
-        },
-        name: {
-          ...state.fields.name,
-          value: product.name
-        },
-        photos: {
-          ...state.fields.photos,
-          // TODO webp/jpeg
-          value: product.photos.map(({ filename }) => ({ src: `/media/${filename}.jpeg` }))
-        },
-        price: {
-          ...state.fields.price,
-          value: product.price
-        }
-      },
-      id: product.id
-    }));
+    const state = await setState(state => {
+
+      const fields = copyFields(state.fields);
+
+      fields.description.value = product.description;
+      fields.name.value = product.name;
+
+      // TODO webp/jpeg
+      fields.photos.value = product.photos.map(({ filename }) =>
+        ({ src: `/media/${filename}.jpeg` }));
+
+      fields.price.value = product.price;
+
+      return {
+        ...state,
+        fields,
+        id: product.id
+      }
+    });
 
     await update(ManageProduct(state));
   }
@@ -131,30 +128,36 @@ const handlePhotos = async (e) => {
 const handleDelete = async ({ e, handle, id }) => {
 
   e.preventDefault();
+  e.target.disabled = true;
 
+  // TODO better error handling
   await Api.deleteProduct({ id });
 
+  e.target.disabled = false;
   setLocation(`/manage-profile?handle=${handle}`);
 };
 
 const handleSubmit = async ({ e, fields, handle, id }) => {
 
   e.preventDefault();
+  e.target.disabled = true;
 
-  let error;
-  if (!id) {
+  fields = copyFields(fields);
+  trimFields(fields);
 
-    error = (await Api.createProduct({ fields, handle })).error;
-  } else {
+  const { error } = id
+    ? await Api.updateProduct({ fields, id })
+    : await Api.createProduct({ fields, handle });
 
-    error = (await Api.updateProduct({ fields, id })).error;
-  }
-
+  console.log({ error });
   if (error) {
 
     const state = setState(state => {
 
-      const { errorText, fields } = Api.getFieldsFromError({ error, fields: state.fields });
+      const { errorText, fields } = Api.getFieldsFromError({
+        error,
+        fields: copyFields(state.fields)
+      });
 
       return {
         ...state,
@@ -163,10 +166,16 @@ const handleSubmit = async ({ e, fields, handle, id }) => {
       };
     });
 
+    e.target.disabled = false;
+
     await update(ManageProduct(state));
+
     setTimeout(() => alert(state.errorText), 1);
 
   } else {
+
+    e.target.disabled = false;
+
     setLocation(`/manage-profile?handle=${handle}`);
   }
 };
@@ -181,6 +190,7 @@ const ManageProduct = ({ fields, handle, id }) => html`
     name="photos",
     type="file"
   />
+
   <label>
     Name
     <input
@@ -190,35 +200,36 @@ const ManageProduct = ({ fields, handle, id }) => html`
       .value=${fields.name.value}
     />
   </label>
+
   <label>
     Price
     <input
       @change=${handleChange}
       name="price"
-      type="text"
+      type="number"
       .value=${fields.price.value}
     />
   </label>
+
   <label>
     Description
     <textarea
       @change=${handleChange}
-      class=""
       name="description"
       .value=${fields.description.value}
     ></textarea>
   </label>
+
   ${ id ? html`
   <input
     @click=${(e) => handleDelete({ e, handle, id })}
     type="submit"
     value="Delete"
   />` : nothing}
+
   <input
     @click=${(e) => handleSubmit({ e, fields, handle, id })}
     type="submit"
     value="Save"
   />
 </form>`;
-
-export default ManageProduct;

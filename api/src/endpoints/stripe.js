@@ -54,7 +54,7 @@ router.get('/authorize/grant', async (req, res) => {
 router.get('/receipt', async (req, res) => {
 
   // TODO api validation
-  const { handle, sessionId } = req.query;
+  const { handle, stripeSessionId } = req.query;
 
   const { stripe_user_id } =
     (await mongoStore.getStripeAccount({ handle }))
@@ -63,7 +63,7 @@ router.get('/receipt', async (req, res) => {
   const { payment_intent } = await stripe
     .checkout
     .sessions
-    .retrieve(sessionId, { stripeAccount: stripe_user_id });
+    .retrieve(stripeSessionId, { stripeAccount: stripe_user_id });
 
   const { charges: { data: [{ receipt_url: receiptUrl }] } } = await stripe
     .paymentIntents
