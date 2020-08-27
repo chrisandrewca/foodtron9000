@@ -23,8 +23,8 @@ router.post('/', async (req, res) => {
   // TODO api validation for req.body
 
   const { handle } = req.body;
+
   // TODO from mongo
-  // TODO billing/business model
   const currency = 'USD';
 
   const line_items = [];
@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
 
     if (!product) {
       // TODO product has been deleted - won't show up in the checkout sale...
-        // somehow notify user...
+      // somehow notify user...
       continue;
     }
 
@@ -66,6 +66,8 @@ router.post('/', async (req, res) => {
     (await mongoStore.getStripeAccount({ handle }))
     || { stripe_user_id: process.env.STRIPE_ACCOUNT_ID };
 
+  let payment_intent_data;
+
   if (process.env.STRIPE_ACCOUNT_ID === stripe_user_id) {
 
     const user = await mongoStore.getUserByHandle({ handle });
@@ -74,13 +76,14 @@ router.post('/', async (req, res) => {
       lineItems: line_items,
       user
     });
-  }
+  } else {
 
-  let payment_intent_data;
-  // TODO when retrieving a stripe account from mongo
-  payment_intent_data = {
-    //application_fee_amount: 1 // TODO
-  };
+    // warning: user has no connected stripe account and application_fee_amount requires one
+    // TODO could use a permanent dummy account here but any payments would go to us and not the user...
+    payment_intent_data = {
+      application_fee_amount: 30
+    };
+  }
 
   const checkout = {
     cancel_url: `https://${process.env.RUNTIME_DOMAIN}/${handle}`,
