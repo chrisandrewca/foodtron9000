@@ -31,6 +31,9 @@ const showAllByUser = async (args) => {
 const showAuthSessions = async () =>
   console.dir(await mongoStore.findAllInCollection('authSession'), { depth: null });
 
+const showErrors = async () =>
+  console.dir(await mongoStore.findAllInCollection('error'), { depth: null });
+
 const showLoginLinks = async () =>
   console.dir(await mongoStore.findAllInCollection('loginLink'), { depth: null });
 
@@ -64,6 +67,7 @@ const args = process.argv.slice(2);
 const funcs = {
   allByUser: showAllByUser,
   authSession: showAuthSessions,
+  error: showErrors,
   loginLink: showLoginLinks,
   order: showOrder,
   orderSession: showOrderSessions,

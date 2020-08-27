@@ -28,7 +28,7 @@ const setAuthSession = async (res, { handle }) => {
   // prevent orphans and multiple sessions
   await mongoStore.deleteAuthSessions({ handle });
 
-  await mongoStore.setAuthSession({ created: Date.now(), handle, sessionId });
+  await mongoStore.setAuthSession({ created: Date.now(), handle, id: sessionId });
 
   res.setHeader('Set-Cookie', cookie.serialize('sessionId', sessionId, {
     domain: process.env.RUNTIME_DOMAIN,
@@ -45,7 +45,7 @@ const validateAuthSession = async (req, res, next) => {
   const { sessionId } = cookie.parse(req.headers.cookie || '');
 
   // notice: users can be revoked by deleting their session from the store
-  const authSession = await mongoStore.getAuthSession({ sessionId });
+  const authSession = await mongoStore.getAuthSession({ id: sessionId });
 
   if (!authSession) {
     return res.status(401).end();

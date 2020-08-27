@@ -12,6 +12,22 @@
   <script type="module">
     import App from "./app.js";
     App();
+
+    window.addEventListener('unhandledrejection', e => {
+
+      const { reason: { message, stack } } = e;
+
+      fetch('/api/error', {
+        body: JSON.stringify({
+          message,
+          stack
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        method: 'POST'
+      });
+    });
   </script>
 </body>
 

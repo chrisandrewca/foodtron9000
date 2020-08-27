@@ -1,20 +1,27 @@
 const mongo = require('mongodb').MongoClient;
 const uuid = require('uuid').v4;
 
-const getAuthSession = async ({ sessionId }) =>
+const getAuthSession = async ({ id }) =>
   await cmd(async db =>
-    await db.collection('authSession').findOne({ sessionId }));
+    await db.collection('authSession').findOne({ id }));
 
-const setAuthSession = async ({ created, handle, sessionId }) =>
+const setAuthSession = async ({ created, handle, id }) =>
   await cmd(async db =>
     await db.collection('authSession').updateOne(
       { handle },
-      { $set: { created, handle, sessionId } },
+      { $set: { created, handle, id } },
       { upsert: true }));
 
 const deleteAuthSessions = async ({ handle }) =>
   await cmd(async db =>
     await db.collection('authSession').deleteMany({ handle }));
+
+const setError = async ({ message, orderSessionId, stack }) =>
+  await cmd(async db =>
+    await db.collection('error').updateOne(
+      { message },
+      { $set: { message, orderSessionId, stack } },
+      { upsert: true }));
 
 const getLoginLink = async ({ key }) =>
   await cmd(async db =>
@@ -112,6 +119,7 @@ module.exports = {
   getAuthSession,
   setAuthSession,
   deleteAuthSessions,
+  setError,
   getLoginLink,
   setLoginLink,
   deleteLoginLinks,

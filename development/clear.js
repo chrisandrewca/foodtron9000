@@ -18,6 +18,9 @@ const clearAllByUser = async (args) => {
 const clearAuthSessions = async () =>
   await mongoStore.clearAllInCollection('authSession');
 
+const clearErrors = async () =>
+  await mongoStore.clearAllInCollection('error');
+
 const clearLoginLinks = async () =>
   await mongoStore.clearAllInCollection('loginLink');
 
@@ -52,6 +55,7 @@ const clearWwwMedia = async () => {
 const clearEverything = async () => {
 
   await clearAuthSessions();
+  await clearErrors();
   await clearLoginLinks();
   await clearOrder();
   await clearOrderSessions();
@@ -65,6 +69,7 @@ const args = process.argv.slice(2);
 const funcs = {
   allByUser: clearAllByUser,
   authSession: clearAuthSessions,
+  error: clearErrors,
   everything: clearEverything,
   loginLink: clearLoginLinks,
   order: clearOrder,

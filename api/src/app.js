@@ -24,6 +24,7 @@ app.use(require('./session/order-session'));
 
 app.use('/api/auth', require('./endpoints/auth'));
 app.use('/api/buy', require('./endpoints/buy'));
+app.use('/api/error', require('./endpoints/error'));
 app.use('/api/order', require('./endpoints/order'));
 app.use('/api/product', require('./endpoints/product'));
 app.use('/api/profile', require('./endpoints/profile'));
