@@ -1,4 +1,7 @@
 module.exports = {
+  buildOptions: {
+    clean: true
+  },
   mount: {
     src: "/"
   },
