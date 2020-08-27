@@ -4,7 +4,8 @@
   "author": "Chris Campbell",
   "license": "GPLv2",
   "scripts": {
-    "dev": "nodemon --require dotenv/config ./src/www"
+    "dev": "nodemon --require dotenv/config ./src/www",
+    "prod": "node --require dotenv/config ./src/www"
   },
   "dependencies": {
     "cookie": "^0.4.1",

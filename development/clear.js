@@ -2,6 +2,19 @@ require('dotenv').config();
 const fs = require('fs/promises');
 const mongoStore = require('./development-mdb');
 
+const clearAllByUser = async (args) => {
+
+  const handle = args[args.findIndex(a => a === 'allByUser') + 1];
+
+  await mongoStore.clearAllInCollectionByUser({ collection: 'authSession', handle });
+  await mongoStore.clearAllInCollectionByUser({ collection: 'loginLink', handle });
+  await mongoStore.clearAllInCollectionByUser({ collection: 'order', handle });
+  await mongoStore.clearAllInCollectionByUser({ collection: 'orderSession', handle });
+  await mongoStore.clearAllInCollectionByUser({ collection: 'product', handle });
+  await mongoStore.clearAllInCollectionByUser({ collection: 'stripeAccount', handle });
+  await mongoStore.clearAllInCollectionByUser({ collection: 'user', handle });
+};
+
 const clearAuthSessions = async () =>
   await mongoStore.clearAllInCollection('authSession');
 
@@ -50,6 +63,7 @@ const clearEverything = async () => {
 
 const args = process.argv.slice(2);
 const funcs = {
+  allByUser: clearAllByUser,
   authSession: clearAuthSessions,
   everything: clearEverything,
   loginLink: clearLoginLinks,
@@ -62,5 +76,7 @@ const funcs = {
 };
 
 for (const arg of args) {
-  funcs[arg]();
+  if (funcs[arg]) {
+    funcs[arg](args);
+  }
 }

@@ -1,16 +1,26 @@
 const mongo = require('mongodb').MongoClient;
 
 const clearAllInCollection = async (collection) =>
-    await cmd(async db =>
-      await db.collection(collection).deleteMany({}));
+  await cmd(async db =>
+    await db.collection(collection).deleteMany({}));
+
+const clearAllInCollectionByUser = async ({ collection, handle }) =>
+  await cmd(async db =>
+    await db.collection(collection).deleteMany({ handle }));
 
 const findAllInCollection = async (collection) =>
-    await cmd(async db =>
-      await db.collection(collection).find({}).toArray());
+  await cmd(async db =>
+    await db.collection(collection).find({}).toArray());
+
+const findAllInCollectionByUser = async ({ collection, handle }) =>
+  await cmd(async db =>
+    await db.collection(collection).find({ handle }).toArray());
 
 module.exports = {
   clearAllInCollection,
-  findAllInCollection
+  clearAllInCollectionByUser,
+  findAllInCollection,
+  findAllInCollectionByUser
 };
 
 /*

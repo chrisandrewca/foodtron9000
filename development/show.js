@@ -2,6 +2,32 @@ require('dotenv').config();
 const fs = require('fs/promises');
 const mongoStore = require('./development-mdb');
 
+const showAllByUser = async (args) => {
+
+  const handle = args[args.findIndex(a => a === 'allByUser') + 1];
+
+  console.log('authSession');
+  console.dir(await mongoStore.findAllInCollectionByUser({ collection: 'authSession', handle }), { depth: null });
+
+  console.log('loginLink');
+  console.dir(await mongoStore.findAllInCollectionByUser({ collection: 'loginLink', handle }), { depth: null });
+
+  console.log('order');
+  console.dir(await mongoStore.findAllInCollectionByUser({ collection: 'order', handle }), { depth: null });
+
+  console.log('orderSession');
+  console.dir(await mongoStore.findAllInCollectionByUser({ collection: 'orderSession', handle }), { depth: null });
+
+  console.log('product');
+  console.dir(await mongoStore.findAllInCollectionByUser({ collection: 'product', handle }), { depth: null });
+
+  console.log('stripeAccount');
+  console.dir(await mongoStore.findAllInCollectionByUser({ collection: 'stripeAccount', handle }), { depth: null });
+
+  console.log('user');
+  console.dir(await mongoStore.findAllInCollectionByUser({ collection: 'user', handle }), { depth: null });
+};
+
 const showAuthSessions = async () =>
   console.dir(await mongoStore.findAllInCollection('authSession'), { depth: null });
 
@@ -36,6 +62,7 @@ const showWwwMedia = async () => {
 
 const args = process.argv.slice(2);
 const funcs = {
+  allByUser: showAllByUser,
   authSession: showAuthSessions,
   loginLink: showLoginLinks,
   order: showOrder,
@@ -47,5 +74,7 @@ const funcs = {
 };
 
 for (const arg of args) {
-  funcs[arg]();
+  if (funcs[arg]) {
+    funcs[arg](args);
+  }
 }
