@@ -288,7 +288,7 @@ ${stripeAuthorization.url
     Payments will be deposited into your bank account.
   </p>
   <p>
-    The Food-Tron 9000 collects 10% of each order, while Stripe collects 2.9%. <!--Tap here to calculate your profits.-->
+    The Food-Tron 9000 collects .30c on each order. Our payment processor Stripe collects 2.9%. <!--Tap here to calculate your profits.-->
   </p>`
     : html`
   <p>
