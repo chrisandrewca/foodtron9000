@@ -62,6 +62,7 @@ h1, h2, h3, h4, h5, h6 {
  * Landing page
  */
 .landing {
+  position: relative;
   height: 100%;
   overflow: hidden;
   position: relative;
@@ -80,16 +81,33 @@ h1, h2, h3, h4, h5, h6 {
 .headers > h1,
 .headers > h2 {
   background: white;
+  box-shadow: 0 2px 1px rgba(0,0,0,0.09), 
+              0 4px 2px rgba(0,0,0,0.09), 
+              0 8px 4px rgba(0,0,0,0.09), 
+              0 16px 8px rgba(0,0,0,0.09),
+              0 32px 16px rgba(0,0,0,0.09);
   color: black;
   display: inline-block;
   font-size: 4.5vw;
-  margin-block-start: 0.7vh;
   margin-block-end: 0.7vh;
+  margin-block-start: 0.7vh;
   padding: 1vw 2vw;
 }
 
 .headers > h2 {
   font-size: 3.75vw;
+}
+
+video {
+  border-right: 1px solid black;
+  border: 2px solid black;
+  left: 0;
+  margin: 0 auto;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 12vh;
+  width: 90vw;
 }
 
 /*

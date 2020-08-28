@@ -261,6 +261,12 @@ const Home = ({ dpr, fields }) => html`
     <h1>Sell your food to everyone, anywhere 🌎</h1>
     <h2>Instantly at your fingertips ✌</h2>
   </div>
+
+  <video autoplay controls loop muted playsinline>
+    <source src="/assets/video/intro.webm" type="video/webm" />
+    <source src="/assets/video/intro.mp4" type="video/mp4" />
+  </video>
+
   <div class="start">
     <form class="signup">
         <label class="file">
