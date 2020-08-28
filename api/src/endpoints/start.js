@@ -79,7 +79,7 @@ router.post('/', multer.single('photo'), async (req, res) => {
       // like handle regex
     await mongoStore.setUser({
       ...body,
-      description: 'Pot stickers! Small plates! Oh my 🤤',
+      description: 'Hand-crafted cakes 🧁 pastries 🥧 and sweets 🍭',
       photo: { filename: 'chrisandrewca' }
     });
 
