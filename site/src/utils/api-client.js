@@ -183,11 +183,30 @@ export const setProfile = async ({ fields, handle }) => {
   return profile;
 };
 
-export const getReceipt = async ({ handle, stripeSessionId }) => {
+export const setProfileFeature = async ({ handle, stripeCheckout }) => {
+
+  const result = await fetch('/api/profile/feature', {
+    body: JSON.stringify({ handle, stripeCheckout }),
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'POST'
+  });
+
+  const { profile } = result.ok
+    ? { profile: {} } // TODO update other similars to follow this format
+    : await result.json();
+
+  return profile;
+};
+
+export const getReceipt = async ({ handle, orderId, paymentMethod }) => {
 
   const params = new URLSearchParams();
   params.set('handle', handle);
-  params.set('stripeSessionId', stripeSessionId);
+  params.set('orderId', orderId);
+  params.set('paymentMethod', paymentMethod);
 
   const result = await fetch(`/api/stripe/receipt?${params.toString()}`, {
     header: { Accept: 'application/json' },

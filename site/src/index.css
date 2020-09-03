@@ -46,6 +46,32 @@ a, input, label, textarea {
 	-moz-appearance: none;
 }
 
+/* TODO re-weight on 16px and use rem over vh/vw, CSS optimizations, consolidation, etc */
+.checkbox {
+  background-color: white;
+  border: 1px solid #262626;
+  border-radius: 3px;
+  height: 16px;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  float: left;
+  margin: 3px 8px 0 0;
+}
+
+.checkbox:focus {
+  outline-color: #3b3b3b;
+}
+
+.checkbox:checked::before {
+  color: green;
+  content: "\2713";
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 800;
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
   padding: 0;

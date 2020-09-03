@@ -16,7 +16,6 @@ const orderSession = async (req, res, next) => {
     });
 
     if (validationError) {
-      console.dir('orderSession error', { validationError });
       // TODO devops/SRE - notify team if there's an error here
     }
 

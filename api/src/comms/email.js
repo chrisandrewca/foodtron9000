@@ -18,13 +18,13 @@ const sendCheckoutWithoutStripeAccountEmail = async ({ lineItems, user }) => {
           </li>`)}
           </ul>
           <p>
-            But before you fire up the grill 🔥, you'll need to signup with our partner Stripe to begin accepting orders and collecting payments.
+            But before you fire up the grill 🔥, you'll need to choose how to collect payments. Accept payments online with our partner Stripe or collect payments through your own means.
           </p>
           <p>
-            Visit your profile and swipe down to the <a href='https://${process.env.RUNTIME_DOMAIN}/manage-profile?handle=${user.handle}'>Collect Payments</a> section.
+            Visit your profile and swipe down to the <a href='https://${process.env.RUNTIME_DOMAIN}/manage-profile?handle=${user.handle}'>Collect Payments</a> section to get started with Stripe.
           <p>
           <p>
-            Hope to have you on board! 🚀
+            Hope to see you on board! 🚀
           </p>
           <p>
             Chris from the Food-Tron 9000

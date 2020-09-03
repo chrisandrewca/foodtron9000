@@ -7,6 +7,17 @@ const multer = require('multer')({
 const photoService = require('../media/photo');
 const router = require('express').Router();
 
+// TODO authorize
+router.post('/feature', async (req, res) => {
+
+  // TODO API Validation
+  const { handle, stripeCheckout } = req.body;
+
+  await mongoStore.setUserFeature({ handle, stripeCheckout });
+
+  return res.status(200).end();
+});
+
 router.get('/:handle', async (req, res) => {
 
   const { params, validationError } = await apiValidation.profileGet(req);
@@ -46,10 +57,11 @@ router.get('/:handle', async (req, res) => {
   // safe since guarded with mongoStore.getUserExists
   const products = await mongoStore.getProductsByHandle(params);
   const { description, photo } = await mongoStore.getUserByHandle(params);
+  const { stripeCheckout } = await mongoStore.getUserFeature(params);
 
   // TODO validate schemas going out
   return res.json({
-    profile: { products, user: { description, photo } }
+    profile: { products, user: { description, photo, stripeCheckout } }
   });
 });
 

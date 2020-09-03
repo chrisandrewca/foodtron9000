@@ -41,15 +41,19 @@ const deleteLoginLinks = async ({ handle }) =>
 const setOrder = async ({
   customer,
   handle,
+  id,
   products,
-  stripe,
-  id = uuid()
+  stripe
 }) =>
   await cmd(async db =>
     await db.collection('order').updateOne(
       { handle, id },
       { $set: { customer, handle, id, products, stripe } },
       { upsert: true }));
+
+const getOrderById = async ({ id }) =>
+  await cmd(async db =>
+    await db.collection('order').findOne({ id }));
 
 const getOrderSession = async ({ id }) =>
   await cmd(async db =>
@@ -115,6 +119,18 @@ const getUserExists = async ({ email, handle }) =>
   await cmd(async db =>
     await db.collection('user').findOne({ $or: [{ email }, { handle }] }));
 
+const getUserFeature = async ({ handle }) =>
+  await cmd(async db =>
+    await db.collection('userFeature').findOne({ handle }));
+
+const setUserFeature = async ({ handle, stripeCheckout }) =>
+  await cmd(async db =>
+    await db.collection('userFeature').updateOne(
+      { handle },
+      { $set: { handle, stripeCheckout } },
+      { upsert: true }
+    ));
+
 module.exports = {
   getAuthSession,
   setAuthSession,
@@ -124,6 +140,7 @@ module.exports = {
   setLoginLink,
   deleteLoginLinks,
   setOrder,
+  getOrderById,
   getOrderSession,
   setOrderSession,
   setProduct,
@@ -134,7 +151,9 @@ module.exports = {
   setStripeAccount,
   setUser,
   getUserByHandle,
-  getUserExists
+  getUserExists,
+  getUserFeature,
+  setUserFeature
 };
 
 /*

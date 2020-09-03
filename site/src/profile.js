@@ -47,7 +47,7 @@ export const loadEffect = async () => {
   }
 
   let state;
-  if (!params.has('session_id')) {
+  if (!params.has('orderId')) {
 
     // TODO error handling
     const order = await Api.getOrder();
@@ -63,9 +63,10 @@ export const loadEffect = async () => {
 
   } else {
 
-    const stripeSessionId = params.get('session_id');
+    const orderId = params.get('orderId');
+    const paymentMethod = params.get('paymentMethod');
 
-    const receipt = await Api.getReceipt({ handle, stripeSessionId });
+    const receipt = await Api.getReceipt({ handle, orderId, paymentMethod });
 
     // TODO plenty of duplication
     // TODO error handling
@@ -104,21 +105,36 @@ const handleBuy = async ({ e, handle }) => {
 
   const buy = await Api.buy({ handle });
 
-  const script = document.createElement('script');
-  script.onload = async () => {
+  if (buy.stripe) {
+    const script = document.createElement('script');
+    script.onload = async () => {
 
-    const stripe = Stripe(import.meta.env.SNOWPACK_PUBLIC_STRIPE_PUBLIC, {
-      stripeAccount: buy.stripe.stripeAccount
-    });
+      const stripe = Stripe(import.meta.env.SNOWPACK_PUBLIC_STRIPE_PUBLIC, {
+        stripeAccount: buy.stripe.stripeAccount
+      });
 
-    // TODO error handling with result
-    await stripe.redirectToCheckout({
-      sessionId: buy.stripe.sessionId
-    });
-  };
+      // TODO error handling with result
+      await stripe.redirectToCheckout({
+        sessionId: buy.stripe.sessionId
+      });
+    };
 
-  script.src = import.meta.env.SNOWPACK_PUBLIC_STRIPE_API;
-  document.head.appendChild(script);
+    script.src = import.meta.env.SNOWPACK_PUBLIC_STRIPE_API;
+    document.head.appendChild(script);
+  } else {
+
+    const receipt = await Api.getReceipt({ handle, orderId: buy.system.orderId });
+
+    const order = await Api.deleteOrder();
+
+    const state = setState(state => ({
+      ...state,
+      content: ProfileThankYou({ handle, receipt }),
+      order
+    }));
+
+    await update(Profile(state));
+  }
 
   e.target.disabled = true;
 };
@@ -188,12 +204,20 @@ const ProfileGallery = ({ placeholderProducts, products }) => html`
     </div>`)}
 </div>`;
 
-const ProfileThankYou = ({ handle, receipt: { receiptUrl } }) => html`
+// TODO start creating business logic, receipt / product formatted lists in shared code
+const ProfileThankYou = ({ handle, receipt: { products, url } }) => html`
 
 <div class="gallery">
   <h2>Thank you for your purchase</h2>
   <p>Your order will be ready in about 15 minutes.</p>
-  <p><a .href=${receiptUrl}>Tap here to view your receipt.</a></p>
+  ${ url ? html`
+  <p><a .href=${url}>Tap here to view your receipt.</a></p>` : html`
+  <ul>
+    ${products.map(({ name, note, quantity }) => html`
+    <li>
+      ${name} x${quantity} ${note ? html`<b>${note}</b>` : ''}
+    </li>`)}
+  </ul>` }
   <p><a .href=${`/${handle}`}>Continue shopping</a></p>
 </div>`;
 

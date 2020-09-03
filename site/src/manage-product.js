@@ -149,7 +149,6 @@ const handleSubmit = async ({ e, fields, handle, id }) => {
     ? await Api.updateProduct({ fields, id })
     : await Api.createProduct({ fields, handle });
 
-  console.log({ error });
   if (error) {
 
     const state = setState(state => {

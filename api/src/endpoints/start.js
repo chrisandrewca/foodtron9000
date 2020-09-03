@@ -83,6 +83,8 @@ router.post('/', multer.single('photo'), async (req, res) => {
       photo: { filename: 'chrisandrewca' }
     });
 
+    await mongoStore.setUserFeature(body);
+
     await authService.setAuthSession(res, body);
 
     const photos = await photoService.saveFromFiles({ files: [file] });

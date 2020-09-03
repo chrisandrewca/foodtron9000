@@ -1,6 +1,6 @@
 import * as Api from './utils/api-client';
 import { copyFields, trimFields } from './utils/form';
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { getSearchParams, setLocation } from './utils/location';
 import { setState } from './utils/state';
 import { update } from './utils/render';
@@ -17,7 +17,8 @@ export const loadState = async () => {
       fields: {
         description: { value: '' }
       },
-      products: []
+      products: [],
+      user: {}
     },
     handle: params.get('handle'),
     stripeAuthorization: {}
@@ -32,6 +33,14 @@ export const loadEffect = async () => {
   const handle = getSearchParams().get('handle');
   const profile = await Api.getProfile(handle);
   const stripeAuthorization = await Api.getStripeAuthorization();
+
+  // warning: flow is as:
+    // 1. undefined in backend / true in frontend - results in Test checkout with Stripe
+    // 2. undefined in backend / sign up for stripe / set to true (via auth grant)
+    // 3. undefined in backend / true in frontend until user unchecks / set to false
+  if (profile.user.stripeCheckout === undefined) {
+    profile.user.stripeCheckout = true;
+  }
 
   const state = setState(state => ({
     ...state,
@@ -168,6 +177,28 @@ const handleProfileSubmit = async ({ e, fields, handle }) => {
   }
 };
 
+const handleEnableStripeCheckout = async ({ e, handle }) => {
+
+  e.target.disabled = true;
+
+  await Api.setProfileFeature({ handle, stripeCheckout: e.target.checked });
+  // TODO error handling
+
+  const profile = await Api.getProfile(handle);
+  // TODO error handling
+
+  const state = setState(state => ({
+    ...state,
+    profile: {
+      ...state.profile,
+      ...profile
+    }
+  }));
+
+  e.target.disabled = false;
+  await update(ManageProfile(state));
+}
+
 const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
 
 <style type="text/css">
@@ -281,19 +312,32 @@ const ManageProfile = ({ handle, profile, stripeAuthorization }) => html`
 
 <section>
 <h2>Collect Payments</h2>
-${stripeAuthorization.url
-    ? html`
-  <p>
-    <a .href=${stripeAuthorization.url} target="_blank">Create a Stripe account to get paid.</a>
-    Payments will be deposited into your bank account.
-  </p>
-  <p>
-    The Food-Tron 9000 collects .30c on each order. Our payment processor Stripe collects 2.9%. <!--Tap here to calculate your profits.-->
-  </p>`
-    : html`
-  <p>
-    Welcome aboard! 🚀 Check your <a href="https://dashboard.stripe.com/" target="_blank">Stripe</a> account to see your collected payments.
-  </p>`}
+  <form>
+    <label>
+      <input
+        .checked=${profile.user.stripeCheckout}
+        class='checkbox'
+        @click=${(e) => handleEnableStripeCheckout({ e, handle })}
+        name="enable-stripe-checkout"
+        type="checkbox">
+      Enable Stripe checkout
+    </label>
+  </form>
+  ${profile.user.stripeCheckout ?
+    stripeAuthorization.url
+      ? html`
+        <p>
+          <a .href=${stripeAuthorization.url}>Create a Stripe account to get paid.</a>
+          Payments will be deposited into your bank account.
+        </p>
+        <p>
+          The Food-Tron 9000 collects .30c on each order. Our payment processor Stripe collects 2.9%. <!--Tap here to calculate your profits.-->
+        </p>`
+      : html`
+        <p>
+          Welcome aboard! 🚀 Check your <a href="https://dashboard.stripe.com/" target="_blank">Stripe</a> account to see your collected payments.
+        </p>`
+    : nothing}
 </section>
 </main>
 </div>`;

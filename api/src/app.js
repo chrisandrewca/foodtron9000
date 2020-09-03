@@ -6,12 +6,15 @@ const app = express();
 app.use(logger('dev')); // TODO process.env
 app.use(helmet());
 
-app.use(express.json({ verify: (req, res, buf, enc) => {
-  // TODO could optimize this - and avoid 2x the work (rawBody + json parse)
-  if (req.originalUrl.endsWith('stripe/hook')) {
-    req.rawBody = buf.toString();
+app.use(express.json({
+  verify: (req, res, buf, enc) => {
+    // TODO could optimize this - and avoid 2x the work (rawBody + json parse)
+    if (req.originalUrl.endsWith('stripe/hook')
+      || req.originalUrl.endsWith('stripe/hook-personal')) {
+      req.rawBody = buf.toString();
+    }
   }
-}}));
+}));
 
 app.use(express.urlencoded({ extended: false }));
 

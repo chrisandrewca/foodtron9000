@@ -1,8 +1,8 @@
 const auth = require('../auth/auth');
-const emailService = require('../comms/email');
 const mongoStore = require('../storage/mdb');
 const router = require('express').Router();
 const stripe = require('stripe')(process.env.STRIPE_PRIVATE);
+const stripeService = require('../payments/stripe-bl');
 
 router.get('/authorize', auth.validateAuthSession, async (req, res) => {
 
@@ -45,6 +45,9 @@ router.get('/authorize/grant', async (req, res) => {
 
     await mongoStore.setStripeAccount({ handle, ...stripeAccount });
 
+    // since stripeCheckout's initial value is undefined so we don't need a 1st time set variable
+    await mongoStore.setUserFeature({ handle, stripeCheckout: true });
+
     return res.redirect(`/manage-profile?handle=${handle}`);
   }
 
@@ -54,102 +57,84 @@ router.get('/authorize/grant', async (req, res) => {
 router.get('/receipt', async (req, res) => {
 
   // TODO api validation
-  const { handle, stripeSessionId } = req.query;
+  const { handle, orderId, paymentMethod } = req.query;
 
-  const { stripe_user_id } =
-    (await mongoStore.getStripeAccount({ handle }))
-    || { stripe_user_id: process.env.STRIPE_ACCOUNT_ID };
+  // TODO consider querying by { handle, id }
 
-  const { payment_intent } = await stripe
-    .checkout
-    .sessions
-    .retrieve(stripeSessionId, { stripeAccount: stripe_user_id });
+  let receiptProducts, receiptUrl;
 
-  const { charges: { data: [{ receipt_url: receiptUrl }] } } = await stripe
-    .paymentIntents
-    .retrieve(payment_intent, { stripeAccount: stripe_user_id });
-
-  return res.json({ receipt: { receiptUrl } });
-});
-
-router.post('/hook', async (req, res) => {
-
-  let event;
-  try {
-
-    event = stripe.webhooks.constructEvent(
-      req.rawBody, // warning: from custom middleware
-      req.headers['stripe-signature'],
-      process.env.STRIPE_HOOK_PRIVATE);
-  } catch (err) {
-
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === 'checkout.session.completed') {
-
-    const session = event.data.object;
-    const { metadata: { handle } } = session; // warning: comes from buy.js
+  // warning: be careful of race conditions as the stripe webhook needs to be called and completed
+    // prior to a stripe order being stored in the db
+  if (paymentMethod === 'stripe') {
 
     const { stripe_user_id } =
       (await mongoStore.getStripeAccount({ handle }))
       || { stripe_user_id: process.env.STRIPE_ACCOUNT_ID };
 
-    const { data: lineItems } = await stripe
+    const { payment_intent } = await stripe
       .checkout
       .sessions
-      // TODO paginate
-      .listLineItems(session.id, { limit: 100 }, { stripeAccount: stripe_user_id });
+      .retrieve(orderId, { stripeAccount: stripe_user_id });
 
-    const products = [];
-    for (const lineItem of lineItems) {
-
-      // warning: comes from buy.js
-      const { metadata: { id, note }, name } = await stripe
-        .products
-        .retrieve(lineItem.price.product, { stripeAccount: stripe_user_id });
-
-      products.push({
-        id,
-        name,
-        note,
-        quantity: lineItem.quantity
-      });
-    }
-
-    const paymentIntent = await stripe
+    ({ charges: { data: [{ receipt_url: receiptUrl }] } } = await stripe
       .paymentIntents
-      .retrieve(session.payment_intent, { stripeAccount: stripe_user_id });
+      .retrieve(payment_intent, { stripeAccount: stripe_user_id }));
+  } else {
 
-    const customer = {
-      email: paymentIntent.charges.data[0].billing_details.email,
-      name: paymentIntent.charges.data[0].billing_details.name
-    };
-
-    const order = {
-      customer,
-      handle,
-      products,
-      stripe: {
-        lineItems,
-        paymentIntent,
-        sessionId: session.id
-      }
-    };
-
-    await mongoStore.setOrder(order);
-
-    // TODO stats and customer engagement for restaurants things
-    // await db.incrementStat(handle, 'orderCount', 1);
-    // const dollarSales = money.tallyCheckoutSale(event.data.object.display_items);
-    // await db.incrementStat(handle, 'dollarSales', dollarSales);
-
-    const user = await mongoStore.getUserByHandle({ handle });
-
-    await emailService.sendOrderPlacedEmail({ order, user });
+    // warning: be careful of race conditions, the order has been recorded in buy.js
+      // by the time we're here
+    const order = await mongoStore.getOrderById({ id: orderId });
+    receiptProducts = order.products;
   }
 
-  res.json({ received: true });
+  return res.json({
+    receipt: {
+      products: receiptProducts,
+      url: receiptUrl
+    }
+  });
+});
+
+router.post('/hook', async (req, res) => {
+
+  const { error, event, received } =
+    await stripeService.validateHookEvent({
+      rawBody: req.rawBody,
+      signature: req.headers['stripe-signature'],
+      stripeHookPrivateKey: process.env.STRIPE_HOOK_PRIVATE
+    });
+
+  if (error) {
+
+    return res
+      .status(400)
+      .send(`Webhook Error: ${error.message}`);
+  }
+
+  await stripeService.handleHookEvent({ event });
+
+  return res.json({ received });
+});
+
+router.post('/hook-personal', async (req, res) => {
+
+  const { error, event, received } =
+    await stripeService.validateHookEvent({
+      rawBody: req.rawBody,
+      signature: req.headers['stripe-signature'],
+      stripeHookPrivateKey: process.env.STRIPE_HOOK_PERSONAL_PRIVATE
+    });
+
+  if (error) {
+
+    return res
+      .status(400)
+      .send(`Webhook Error: ${error.message}`);
+  }
+
+  await stripeService.handleHookEvent({ event });
+
+  return res.json({ received });
 });
 
 module.exports = router;

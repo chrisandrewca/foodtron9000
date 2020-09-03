@@ -1,0 +1,9 @@
+{
+  "name": "chrisandrewca-db",
+  "version": "1.0.0",
+  "author": "Chris Campbell",
+  "license": "GPLv2",
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  }
+}
