@@ -20,3 +20,6 @@ G: var-www-x
 U: app_user
 U: mongo user
 U: nginx user
+
+one offs:
+- assets cp'd into folder manually

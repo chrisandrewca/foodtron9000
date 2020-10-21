@@ -5,6 +5,8 @@ const App = async () => {
   const pages = [
     { path: /^[/]$/, load: async () => (await import('./home')) },
     { path: /^[/]login$/, load: async () => (await import('./login')) },
+    { path: /^[/]terms$/, load: async () => (await import('./terms')) },
+    { path: /^[/]blog$/, load: async () => (await import('./blog')) },
     { path: /^[/]manage-product$/, load: async () => (await import('./manage-product')) },
     { path: /^[/]manage-profile$/, load: async () => (await import('./manage-profile')) },
     { path: /^[/]profile-product$/, load: async () => (await import('./profile-product')) },

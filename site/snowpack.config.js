@@ -3,7 +3,8 @@ module.exports = {
     clean: true
   },
   mount: {
-    src: "/"
+    src: "/",
+    assets: "/assets"
   },
   plugins: ["@snowpack/plugin-dotenv"]
 };

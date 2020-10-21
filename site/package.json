@@ -4,7 +4,7 @@
   "author": "Chris Campbell",
   "license": "GPLv2",
   "scripts": {
-    "build": "rm -rf /var/www/html/* && snowpack build && cp -r ./build/* /var/www/html/",
+    "build": "rm -rf /var/www/DEV_MIAMI/* && snowpack build && cp -r ./build/* /var/www/DEV_MIAMI/",
     "dev": "snowpack dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
